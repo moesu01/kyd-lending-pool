@@ -10,9 +10,9 @@ import HandCoinsIcon from "../imports/HandCoins.svg";
 // @ts-ignore
 import StackIcon from "../imports/Stack.svg";
 
-const Logo = ({ onClick }: { onClick?: () => void }) => (
+const Logo = ({ onClick, className }: { onClick?: () => void; className?: string }) => (
   <div 
-    className={`relative shrink-0 h-[auot] w-[60px] invert ${onClick ? 'cursor-pointer hover:scale-95 transition-opacity' : ''}`}
+    className={`relative shrink-0 h-[auot] w-[60px] invert ${onClick ? 'cursor-pointer hover:scale-95 transition-opacity' : ''} ${className || ''}`}
     onClick={onClick}
   >
     <img
@@ -28,13 +28,15 @@ const NavButton = ({
   label, 
   onClick, 
   className = '',
-  isActive = false
+  isActive = false,
+  additionalClassName = ''
 }: {
   icon: string;
   label: string;
   onClick?: () => void;
   className?: string;
   isActive?: boolean;
+  additionalClassName?: string;
 }) => {
   const baseClasses = "flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors";
   
@@ -47,7 +49,7 @@ const NavButton = ({
   
   return (
     <div 
-      className={`${baseClasses} ${variantClasses} ${className}`}
+      className={`${baseClasses} ${variantClasses} ${className} ${additionalClassName}`}
       onClick={onClick}
     >
       <img 
@@ -60,7 +62,7 @@ const NavButton = ({
   );
 };
 
-const ConnectWallet = () => {
+const ConnectWallet = ({ className }: { className?: string } = {}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +90,7 @@ const ConnectWallet = () => {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={`relative ${className || ''}`} ref={dropdownRef}>
       <div
         className="
           flex
@@ -98,7 +100,9 @@ const ConnectWallet = () => {
           py-2.5
           rounded-lg
           cursor-pointer
-          bg-white/20
+          bg-white/0
+          border-1
+          border-white/20
           backdrop-blur-sm
           hover:bg-white/30
           transition-all
@@ -107,7 +111,7 @@ const ConnectWallet = () => {
         onClick={handleToggle}
       >
         <img src={imgWallet} alt="" className="w-5 h-5 brightness-0 invert" />
-        <span className="font-inter text-base font-medium">Wallet</span>
+        <span className="font-inter text-base font-regular">Wallet</span>
         <img
           className={`w-2.5 h-2.5 transition-transform duration-200 brightness-0 invert ${isOpen ? 'rotate-180' : ''}`}
           src={imgVector}
@@ -116,7 +120,7 @@ const ConnectWallet = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-md border border-white/20 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute bottom-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-md border border-white/20 rounded-lg shadow-lg z-50 overflow-hidden">
           <div
             className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100"
             onClick={handleEdit}
@@ -135,12 +139,40 @@ const ConnectWallet = () => {
   );
 };
 
-const MobileMenu = ({ isOpen, onClose, onNavigateToStaking, onNavigateToLending, currentPage }: { isOpen: boolean; onClose: () => void; onNavigateToStaking?: () => void; onNavigateToLending?: () => void; currentPage?: 'lend' | 'stake' }) => {
+const MobileMenu = ({ isOpen, onNavigateToStaking, onNavigateToLending, currentPage, className, navButtonClassName, contentClassName, overlayClassName }: { isOpen: boolean; onNavigateToStaking?: () => void; onNavigateToLending?: () => void; currentPage?: 'lend' | 'stake'; className?: string; navButtonClassName?: string; contentClassName?: string; overlayClassName?: string }) => {
+  const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
+  const walletDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (walletDropdownRef.current && !walletDropdownRef.current.contains(event.target as Node)) {
+        setIsWalletDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleWalletToggle = () => setIsWalletDropdownOpen(!isWalletDropdownOpen);
+  const handleDisconnect = () => {
+    setIsWalletDropdownOpen(false);
+    console.log("Disconnect wallet clicked");
+  };
+  const handleEdit = () => {
+    setIsWalletDropdownOpen(false);
+    console.log("Edit wallet clicked");
+  };
+
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-400 ease-out ${isOpen ? 'h-[300px]' : 'h-0'}`}>
+    <div className={`fixed bottom-0 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-200 ease-out ${isOpen ? 'h-[310px]' : 'h-0'} ${className || ''}`}>
+      {/* Mobile menu overlay */}
+      <div className={`fixed inset-0 bg-black/0 z-[-1] transition-opacity duration-150 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${overlayClassName || ''}`} />
       {/* Mobile menu content with same gradient blur as navbar */}
       <div
-        className="
+        className={`
           relative
           h-full
           before:content-['']
@@ -160,7 +192,8 @@ const MobileMenu = ({ isOpen, onClose, onNavigateToStaking, onNavigateToLending,
           before:backdrop-brightness-80
           before:backdrop-contrast-120
           before:backdrop-saturate-200
-        "
+          ${contentClassName || ''}
+        `}
       >
         <div className="relative z-10 h-full flex flex-col">
           <div className="flex-1 p-6 space-y-2">
@@ -168,6 +201,7 @@ const MobileMenu = ({ isOpen, onClose, onNavigateToStaking, onNavigateToLending,
               icon={HandCoinsIcon}
               label="Lend"
               className="w-full justify-start"
+              additionalClassName={navButtonClassName}
               onClick={onNavigateToLending}
               isActive={currentPage === 'lend'}
             />
@@ -175,11 +209,12 @@ const MobileMenu = ({ isOpen, onClose, onNavigateToStaking, onNavigateToLending,
               icon={StackIcon}
               label="Stake"
               className="w-full justify-start"
+              additionalClassName={navButtonClassName}
               onClick={onNavigateToStaking}
               isActive={currentPage === 'stake'}
             />
             <div className="pt-1">
-              <div className="relative">
+              <div className="relative" ref={walletDropdownRef}>
                 <div
                   className="
                     flex
@@ -189,22 +224,43 @@ const MobileMenu = ({ isOpen, onClose, onNavigateToStaking, onNavigateToLending,
                     py-2.5
                     rounded-lg
                     cursor-pointer
-                    bg-white/10
-                    backdrop-blur-sm
+                         bg-white/0
+          border-1
+          border-white/20
                     hover:bg-white/30
                     transition-all
                     text-white
                   "
-                  onClick={() => console.log("Wallet clicked")}
+                  onClick={handleWalletToggle}
                 >
                   <img src={imgWallet} alt="" className="w-5 h-5 brightness-0 invert" />
                   <span className="font-inter text-base font-medium">Wallet</span>
                   <img
-                    className="w-2.5 h-2.5 transition-transform duration-200 brightness-0 invert"
+                    className={`w-2.5 h-2.5 transition-transform duration-200 brightness-0 invert ${isWalletDropdownOpen ? 'rotate-180' : ''}`}
                     src={imgVector}
                     alt="Dropdown arrow"
                   />
                 </div>
+
+                {/* Mobile Wallet Dropdown */}
+                {isWalletDropdownOpen && (
+                  <div className="absolute w-full top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-white/20 rounded-lg shadow-lg z-[80] overflow-hidden">
+                    <div className="flex">
+                      <div
+                        className="flex-1 flex items-center justify-center px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-r border-gray-100"
+                        onClick={handleEdit}
+                      >
+                        <span className="font-inter text-sm text-gray-800">Edit</span>
+                      </div>
+                      <div
+                        className="flex-1 flex items-center justify-center px-4 py-3 cursor-pointer hover:bg-red-50 transition-colors text-red-600"
+                        onClick={handleDisconnect}
+                      >
+                        <span className="font-inter text-sm">Disconnect</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -220,13 +276,36 @@ interface BlurredNavBarProps {
   onNavigateToLending?: () => void;
   currentPage?: 'lend' | 'stake';
   className?: string;
+  variant?: 'default' | 'dashboard';
+  navClassName?: string;
+  logoClassName?: string;
+  navButtonClassName?: string;
+  connectWalletClassName?: string;
+  mobileMenuClassName?: string;
+  mobileMenuButtonClassName?: string;
+  mobileMenuContentClassName?: string;
+  mobileMenuOverlayClassName?: string;
 }
 
-export const BlurredNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavigateToLending, currentPage, className }: BlurredNavBarProps) => {
+export const BlurredNavBar = ({ 
+  onNavigateToLanding, 
+  onNavigateToStaking, 
+  onNavigateToLending, 
+  currentPage, 
+  className,
+  variant = 'default',
+  navClassName,
+  logoClassName,
+  navButtonClassName,
+  connectWalletClassName,
+  mobileMenuClassName,
+  mobileMenuButtonClassName,
+  mobileMenuContentClassName,
+  mobileMenuOverlayClassName
+}: BlurredNavBarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleMobileMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-  const handleMobileMenuClose = () => setIsMobileMenuOpen(false);
 
   return (
     <>
@@ -256,12 +335,14 @@ export const BlurredNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavi
           before:saturate-125
           before:backdrop-contrast-120
           before:backdrop-saturate-300
+          ${variant === 'dashboard' ? 'before:rounded-2xl before:-bottom-2' : ''}
+          ${navClassName || ''}
           ${className || ''}
         `}
       >
         {/* Navbar Content */}
         <div className="relative z-10 flex items-center justify-between px-6 py-4 mx-auto max-w-3xl">
-          <Logo onClick={onNavigateToLanding} />
+          <Logo onClick={onNavigateToLanding} className={logoClassName} />
           
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center gap-8">
@@ -270,20 +351,22 @@ export const BlurredNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavi
               label="Lend"
               onClick={onNavigateToLending}
               isActive={currentPage === 'lend'}
+              additionalClassName={navButtonClassName}
             />
             <NavButton
               icon={StackIcon}
               label="Stake"
               onClick={onNavigateToStaking}
               isActive={currentPage === 'stake'}
+              additionalClassName={navButtonClassName}
             />
-            <ConnectWallet />
+            <ConnectWallet className={connectWalletClassName} />
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={handleMobileMenuToggle}
-            className="sm:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className={`sm:hidden p-2 hover:bg-white/10 rounded-lg transition-colors ${mobileMenuButtonClassName || ''}`}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,10 +382,13 @@ export const BlurredNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavi
 
       <MobileMenu 
         isOpen={isMobileMenuOpen} 
-        onClose={handleMobileMenuClose} 
         onNavigateToStaking={onNavigateToStaking} 
         onNavigateToLending={onNavigateToLending} 
-        currentPage={currentPage} 
+        currentPage={currentPage}
+        className={mobileMenuClassName}
+        navButtonClassName={navButtonClassName}
+        contentClassName={mobileMenuContentClassName}
+        overlayClassName={mobileMenuOverlayClassName}
       />
     </>
   );

@@ -24,7 +24,7 @@ const SHARED_STYLES = {
     imageContainer: "bg-center bg-cover bg-no-repeat rounded-[4px] w-full h-auto aspect-[4/2] mb-2",
     features: "relative w-full",
     featureItem: "px-0 py-[12px] relative w-full border-t border-solid break-words font-inter",
-    featureText: "leading-[1.4] text-[11px] md:text-[13px] font-geist-mono font-light tracking-[-1%]",
+    featureText: "leading-[1.4] text-[11px] md:text-[13px] font-geist-mono font-regular tracking-[-1%]",
     featureTextBold: "font-bold font-inter"
   },
   header: {
@@ -33,7 +33,7 @@ const SHARED_STYLES = {
     leftSection: "flex flex-col items-center lg:items-start justify-start w-full text-center lg:text-left",
     label: "flex flex-col font-bold justify-start relative text-[14px] leading-[1.2] tracking-[3%] lg:text-[19px] text-[rgba(0,0,0,0.6)] text-left font-inter",
     titleSection: "flex flex-col gap-2 lg:gap-0 items-center lg:items-start justify-start w-full lg:w-auto",
-    title: "capitalize font-medium text-[#ffffff] leading-[1.2] text-[36px] text-center lg:text-left font-inter",
+    title: "capitalize font-regular text-[#ffffff] leading-[1.1] tracking-[-3%] text-[32px] md:text-[36px] text-center lg:text-left font-inter",
     subtitle: "relative font-inter text-[16px] md:text-[18px] text-[#cccccc] text-center lg:text-left",
     ctaButton: [
    "bg-gradient-to-b",
@@ -305,7 +305,7 @@ function PoolCardsGrid() {
 
   return (
     <div className={SHARED_STYLES.cardsContainer}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 auto-rows-fr">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 auto-rows-fr pb-16">
         {poolData.map((pool, index) => (
           <PoolCard
             key={index}

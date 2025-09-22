@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FloatingImageGrid } from './components/FloatingImageGrid';
 // import { NavBar } from './components/NavBar';
 import { DashboardNavBar } from './components/DashboardNavBar';
@@ -12,6 +12,21 @@ import { StakingPage } from './StakingPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<'landing' | 'dashboard' | 'backgroundTest' | 'staking'>('landing');
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const mobile = window.innerWidth < 768; // Tailwind's md breakpoint
+      setIsMobile(mobile);
+    };
+
+    // Check on initial load
+    checkIsMobile();
+
+    // Optional: Listen for resize events if you want dynamic switching
+    // window.addEventListener('resize', checkIsMobile);
+    // return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   const navigateToDashboard = () => {
     setCurrentPage('dashboard');
@@ -40,19 +55,42 @@ export default function App() {
 
   return (
     <div className="relative w-full min-h-screen bg-white overflow-x-hidden  ">
-      {/* Three.js Floating Image Grid Background */}
-      <FloatingImageGrid
-        opacity={1}
-        imageScale={.8}
-        gridCellSize={70}
-        driftEnabled={true}
-        driftIntensity={3}
-        hoverScale={2}
-        hoverDistance={0.35}
-        ambientLightColor="#ffffff"
-        ambientLightIntensity={2.0}
-        directionalLightIntensity={0}
-      />
+      {/* Three.js Floating Image Grid Background - Only render when device type is determined */}
+      {isMobile !== null && (
+        <>
+          {/* Mobile Version */}
+          {isMobile && (
+            <FloatingImageGrid
+              opacity={0.6}
+              imageScale={0.8}
+              gridCellSize={70}
+              driftEnabled={true}
+              driftIntensity={3}
+              hoverScale={1}
+              hoverDistance={0.35}
+              ambientLightColor="#ffffff"
+              ambientLightIntensity={2.0}
+              directionalLightIntensity={0}
+            />
+          )}
+          
+          {/* Desktop Version */}
+          {!isMobile && (
+            <FloatingImageGrid
+              opacity={0.6}
+              imageScale={0.8}
+              gridCellSize={70}
+              driftEnabled={true}
+              driftIntensity={.75}
+              hoverScale={1.5}
+              hoverDistance={0.35}
+              ambientLightColor="#ffffff"
+              ambientLightIntensity={2.0}
+              directionalLightIntensity={0}
+            />
+          )}
+        </>
+      )}
       
       {/* Navigation */}
       {/* <NavBar onNavigateToDashboard={navigateToDashboard} /> */}
@@ -88,6 +126,8 @@ export default function App() {
         onNavigateToLanding={navigateToLanding}
         onNavigateToStaking={navigateToStaking}
         onNavigateToLending={navigateToDashboard}
+        mobileMenuOverlayClassName="bg-black/0 backdrop-blur-sm"
+
       />
     </div>
   );

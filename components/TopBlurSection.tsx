@@ -55,10 +55,12 @@ export const TopBlurSection = () => {
           "
     >
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center px-6 py-4 pt-10">
-        <p className="font-geist-mono text-white text-sm font-light tracking-wide">
+      <div className="relative flex items-center justify-center px-6 py-4 pt-10">
+        <p className="font-geist-mono text-white text-[13px] sm:text-sm font-light tracking-wide">
         <span className="inline-block font-bold">
-            {currentNumber.toString().padStart(3, '0')} LIVE EVENTS
+            {currentNumber.toString().padStart(3, '0')} 
+            <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse ml-2 mr-2 mb-1 align-middle"></span>
+            LIVE EVENTS
           </span> → $KYD → LENDING POOL
          
         </p>
