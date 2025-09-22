@@ -250,13 +250,13 @@ export function FloatingImageGrid({
 
   // Handle scroll events for mobile optimization
   const handleScrollStart = () => {
-    if (isMobileRef.current) {
+    if (isMobileRef.current && !isScrollingRef.current) {
       isScrollingRef.current = true;
     }
   };
 
   const handleScrollEnd = () => {
-    if (isMobileRef.current) {
+    if (isMobileRef.current && isScrollingRef.current) {
       // Delay to prevent flickering during scroll momentum
       setTimeout(() => {
         isScrollingRef.current = false;
@@ -661,15 +661,7 @@ if (edgeDistance < borderWidth && mask > 0.0) {
         (currentTime - lastTimeRef.current) / 1000; // Convert to seconds
       lastTimeRef.current = currentTime;
 
-      // Throttle rendering on mobile during scroll to prevent flickering
-      if (isMobileRef.current && isScrollingRef.current) {
-        const timeSinceLastRender = currentTime - lastRenderTimeRef.current;
-        if (timeSinceLastRender < 100) { // Throttle to 10fps during scroll
-          animationIdRef.current = requestAnimationFrame(animate);
-          return;
-        }
-        lastRenderTimeRef.current = currentTime;
-      }
+      // Note: Scroll detection available but no throttling to prevent animation restart
 
       // Update mouse position with smooth lerping
       lerpMousePosition(deltaTime);
