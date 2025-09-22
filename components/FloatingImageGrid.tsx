@@ -135,6 +135,7 @@ export function FloatingImageGrid({
   // Mobile detection and performance optimization
   const isMobileRef = useRef(false);
   const isScrollingRef = useRef(false);
+  const lastRenderTimeRef = useRef(0);
 
   // Mobile detection utility
   const detectMobile = () => {
@@ -402,6 +403,11 @@ export function FloatingImageGrid({
     if (isMobileRef.current) {
       renderer.shadowMap.enabled = false;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.sortObjects = false; // Disable sorting to prevent flickering
+      renderer.autoClear = true; // Ensure proper clearing
+      renderer.autoClearColor = true;
+      renderer.autoClearDepth = true;
+      renderer.autoClearStencil = true;
     }
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
@@ -576,6 +582,7 @@ if (edgeDistance < borderWidth && mask > 0.0) {
               if (isMobileRef.current) {
                 texture.generateMipmaps = false;
                 texture.anisotropy = 1; // Lower anisotropy for mobile
+                texture.needsUpdate = true; // Ensure texture is properly updated
               } else {
                 texture.generateMipmaps = true;
                 texture.anisotropy = 4;
@@ -654,18 +661,25 @@ if (edgeDistance < borderWidth && mask > 0.0) {
         (currentTime - lastTimeRef.current) / 1000; // Convert to seconds
       lastTimeRef.current = currentTime;
 
+      // Throttle rendering on mobile during scroll to prevent flickering
+      if (isMobileRef.current && isScrollingRef.current) {
+        const timeSinceLastRender = currentTime - lastRenderTimeRef.current;
+        if (timeSinceLastRender < 100) { // Throttle to 10fps during scroll
+          animationIdRef.current = requestAnimationFrame(animate);
+          return;
+        }
+        lastRenderTimeRef.current = currentTime;
+      }
+
       // Update mouse position with smooth lerping
       lerpMousePosition(deltaTime);
-
-      // Skip intensive updates during scroll on mobile
-      const shouldUpdate = !isMobileRef.current || !isScrollingRef.current;
 
       // Update image positions and effects
       imageMeshesRef.current.forEach((imageMesh) => {
         const { mesh, velocity, baseVelocity } = imageMesh;
 
-        // Only apply drift if enabled and not scrolling on mobile
-        if (driftEnabled && shouldUpdate) {
+        // Only apply drift if enabled
+        if (driftEnabled) {
           // Calculate mouse influence on velocity (simplified for drift)
           const camera = cameraRef.current;
           if (!camera) return;
