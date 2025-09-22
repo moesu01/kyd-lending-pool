@@ -1,6 +1,4 @@
-import { imgStar1, imgStar2, StarIcon } from "../imports/svg-t6i4s";
-
-const kydLogo = "/imports/kyd_logo_1.svg";
+import { StarIcon, imgLogo } from "../imports/svg-t6i4s";
 
 const Logo = () => {
   return (
@@ -8,7 +6,7 @@ const Logo = () => {
       <img 
         alt="KYD Logo" 
         className="block max-w-none size-full" 
-        src={kydLogo} 
+        src={imgLogo} 
       />
     </div>
   );
