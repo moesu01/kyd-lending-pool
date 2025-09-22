@@ -26,7 +26,10 @@ export default {
       },
       backgroundImage: {
         'radial': 'radial-gradient(var(--tw-gradient-stops))',
-      }
+      },
+      colors: {
+        background: 'var(--background)', // Add this if not already present
+      },
     },
   },
   plugins: [],

@@ -11,14 +11,25 @@ interface StakingPageProps {
 
 export function StakingPage({ onNavigateToLanding, onNavigateToLending, onNavigateToStaking }: StakingPageProps) {
   return (
-    <div className="bg-neutral-50 relative w-full min-h-screen" data-name="Dashboard Staking">
+    <div className="bg-neutral-100 relative w-full min-h-screen" data-name="Dashboard Staking">
       {/* Navigation Bar - Now Sticky */}
-      <div className="sticky top-0 z-30 bg-neutral-50 border-b border-gray-200">
-        <DashboardNavBar onNavigateToLanding={onNavigateToLanding} onNavigateToStaking={onNavigateToStaking} onNavigateToLending={onNavigateToLending} currentPage="stake" />
+      <div className="sticky top-0 z-30">
+        <DashboardNavBar
+          onNavigateToLanding={onNavigateToLanding}
+          onNavigateToStaking={onNavigateToStaking}
+          onNavigateToLending={onNavigateToLending}
+          currentPage="stake"
+          className="
+          backdrop-blur-sm
+          border
+          bg-white/80
+          border-white/10
+        "          
+        />
       </div>
       
       {/* Main Content - Natural Flow */}
-      <div className="flex flex-col gap-6 items-center justify-start w-full max-w-7xl mx-auto px-4 py-8">
+      <div className="flex flex-col gap-6 items-center justify-start w-full max-w-7xl mx-auto px-4 py-8 border-none">
         <StakingHeader />
         <StakingMetrics />
         <StakingSection />

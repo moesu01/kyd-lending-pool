@@ -11,7 +11,7 @@ import StackIcon from "../imports/Stack.svg";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <div 
-    className={`relative w-10 h-10 ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+    className={`relative shrink-0 size-[60px] ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
     onClick={onClick}
   >
     <img
@@ -89,7 +89,19 @@ const ConnectWallet = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer bg-gradient-to-t from-transparent to-white/15 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.08),0px_-1px_4px_0px_#a5fd00,0px_0px_10px_0px_rgba(211,242,39,0.71)] hover:shadow-[0px_2px_5px_0px_rgba(0,0,0,0.12),0px_-2px_6px_0px_#a5fd00,0px_0px_15px_0px_rgba(211,242,39,0.8)] transition-all"
+        className="
+          flex
+          items-center
+          gap-2
+          px-3
+          py-2.5
+          rounded-lg
+          cursor-pointer
+          bg-white/100
+          shadow-[0px_1px_3px_0px_rgba(0,0,0,0.08),0px_-1px_4px_0px_#a5fd00,0px_0px_10px_0px_rgba(211,242,39,0.71)]
+          hover:shadow-[0px_2px_5px_0px_rgba(0,0,0,0.12),0px_-2px_6px_0px_#a5fd00,0px_0px_15px_0px_rgba(211,242,39,0.8)]
+          transition-all
+        "
         onClick={handleToggle}
       >
         <img src={imgWallet} alt="" className="w-5 h-5" />
@@ -165,9 +177,10 @@ interface DashboardNavBarProps {
   onNavigateToStaking?: () => void;
   onNavigateToLending?: () => void;
   currentPage?: 'lend' | 'stake';
+  className?: string;
 }
 
-export const DashboardNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavigateToLending, currentPage }: DashboardNavBarProps) => {
+export const DashboardNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNavigateToLending, currentPage, className }: DashboardNavBarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleMobileMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -175,7 +188,21 @@ export const DashboardNavBar = ({ onNavigateToLanding, onNavigateToStaking, onNa
 
   return (
     <>
-      <nav className="w-full max-w-7xl mx-auto px-6 py-6">
+      <nav
+        className={`
+          w-full
+          max-w-3xl
+          mx-auto
+          px-4
+          py-2
+          sm:py-4
+          rounded-[16px]
+          shadow-[0px_0px_20px_0px_rgba(0,0,0,0.07)]
+          z-60
+          translate-y-[10%]
+          ${className || ''}
+        `}
+      >
         <div className="flex items-center justify-between">
           <Logo onClick={onNavigateToLanding} />
           

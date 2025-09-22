@@ -13,7 +13,6 @@ function MetricCard({
 }) {
   return (
     <div className={`flex flex-col gap-2 md:gap-3 items-center justify-start px-2 md:px-4 py-4 md:py-6 ${flexBasis}`}>
-      <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.2)] inset-0 pointer-events-none" />
       
       {/* Label */}
       <div className="flex items-center justify-center w-full">
@@ -54,7 +53,6 @@ function MetricDivider() {
 export function StakingMetrics() {
   return (
     <div className="bg-transparent flex items-center justify-start rounded-[32px] w-full max-w-[680px] border border-[#dadada]">
-      <div aria-hidden="true" className="absolute border border-[#dadada] inset-0 pointer-events-none rounded-[32px]" />
       
       <MetricCard label="Rewards" value="19.52M" unit="$KYD" flexBasis="flex-[2] md:flex-1" />
       <MetricDivider />

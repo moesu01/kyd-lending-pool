@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { FloatingImageGrid } from './components/FloatingImageGrid';
-import { NavBar2 } from './components/NavBar2';
+// import { NavBar } from './components/NavBar';
+import { DashboardNavBar } from './components/DashboardNavBar';
+import { BlurredNavBar } from './components/BlurredNavBar';
+import { TopBlurSection } from './components/TopBlurSection';
 import { HeadlineSection } from './components/HeadlineSection';
 import { LendingPoolOptions2 } from './components/LendingPoolOptions2';
 import DashboardPage from './DashboardPage';
@@ -43,7 +46,7 @@ export default function App() {
         imageScale={.8}
         gridCellSize={70}
         driftEnabled={true}
-        driftIntensity={0.15}
+        driftIntensity={3}
         hoverScale={2}
         hoverDistance={0.35}
         ambientLightColor="#ffffff"
@@ -52,7 +55,26 @@ export default function App() {
       />
       
       {/* Navigation */}
-      <NavBar2 />
+      {/* <NavBar onNavigateToDashboard={navigateToDashboard} /> */}
+      {/* <DashboardNavBar 
+        onNavigateToLanding={navigateToLanding} 
+        onNavigateToStaking={navigateToStaking} 
+        onNavigateToLending={navigateToDashboard} 
+        currentPage="lend"
+        className="
+          backdrop-blur-sm
+          border
+          bg-white/80
+          border-white/10
+          backdrop-invert-0
+          backdrop-brightness-200
+          backdrop-contrast-100
+          backdrop-saturate-200
+        "
+      /> */}
+      
+      {/* Top Blur Section */}
+      <TopBlurSection />
       
       {/* Main content sections - natural document flow */}
       <div className="relative z-20">
@@ -62,6 +84,12 @@ export default function App() {
         {/* Second Section: Lending Pool Options */}
         <LendingPoolOptions2 onNavigateToDashboard={navigateToDashboard} />
       </div>
+      <BlurredNavBar
+        onNavigateToLanding={navigateToLanding}
+        onNavigateToStaking={navigateToStaking}
+        onNavigateToLending={navigateToDashboard}
+        currentPage="lend"
+      />
     </div>
   );
 }

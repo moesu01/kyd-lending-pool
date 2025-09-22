@@ -334,7 +334,7 @@ export function FloatingImageGrid({
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x333333);
+    scene.background = new THREE.Color(0x181818);
     sceneRef.current = scene;
 
     // Use Orthographic camera for better grid control
@@ -760,13 +760,13 @@ if (edgeDistance < borderWidth && mask > 0.0) {
 
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center ">
-      <div className="relative w-[94vw] h-[91vh]">
+      <div className="relative w-full h-full">
         <div 
           ref={mountRef} 
-          className="absolute inset-0 rounded-[20px] overflow-hidden shadow-[0_0px_24px_0_rgba(0,0,20,.5)]"
+          className="absolute inset-0 md:rounded-[0px] overflow-hidden shadow-[0_0px_24px_0_rgba(0,0,20,.5)]"
         />
         {/* Inner shadow overlay that sits on top */}
-        <div className="absolute inset-0 rounded-[20px] pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,1)]" />
+        <div className="absolute inset-0 md:rounded-[0px] pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,1)]" />
       </div>
 
       {/* Loading overlay */}
