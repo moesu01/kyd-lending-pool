@@ -1,10 +1,10 @@
 // components/BlurredNavBar.tsx
 import { useState, useRef, useEffect } from "react";
 import {
-  imgLogo,
   imgWallet,
   imgVector,
 } from "../imports/svg-w4ktt";
+import kydLogo from "../imports/kyd_logo_1.svg";
 // @ts-ignore
 import HandCoinsIcon from "../imports/HandCoins.svg";
 // @ts-ignore
@@ -12,12 +12,12 @@ import StackIcon from "../imports/Stack.svg";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <div 
-    className={`relative shrink-0 size-[60px] ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+    className={`relative shrink-0 h-[auot] w-[60px] invert ${onClick ? 'cursor-pointer hover:scale-95 transition-opacity' : ''}`}
     onClick={onClick}
   >
     <img
-      className="w-full h-full object-contain"
-      src={imgLogo}
+      className="block max-w-none size-full"
+      src={kydLogo}
       alt="KYD Logo"
     />
   </div>

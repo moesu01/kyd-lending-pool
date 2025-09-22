@@ -10,33 +10,74 @@ const imgVector2 = "http://localhost:3845/assets/9c06145a59937c12a739907741ac364
 // Shared styling constants for consistent theming
 const SHARED_STYLES = {
   card: {
-    container: "backdrop-blur-[19.85px] backdrop-filter bg-white box-border flex flex-col h-auto items-start justify-between overflow-clip px-8 pt-6 pb-2 relative rounded-[16px] shadow-[0px_4px_22.1px_0px_rgba(85,56,106,0.15),0px_1px_3px_0px_rgba(0,0,0,0.2)] w-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105 hover:shadow-[0px_8px_32px_0px_rgba(85,56,106,0.25)]",
+    container: "backdrop-blur-[19.85px] bg-white flex flex-col items-start justify-between px-4 pt-6 pb-2 relative rounded-[16px] shadow-[0px_4px_22.1px_0px_rgba(85,56,106,0.15),0px_1px_3px_0px_rgba(0,0,0,0.2)] w-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105 hover:shadow-[0px_8px_32px_0px_rgba(85,56,106,0.25)]",
     backgroundBlur: "absolute bg-center bg-cover bg-no-repeat blur-[25px] bottom-0 filter left-[-162px] opacity-20 size-[745px]",
     icon: "absolute h-[25px] right-[20px] top-[20px] w-[44px]",
     title: {
-      base: "[text-shadow:rgba(255,255,255,0.5)_0px_-2px_2px] capitalize flex flex-col justify-center leading-[1.1] min-w-full not-italic relative shrink-0 text-[32px] tracking-[-2%]",
-      subtitle: "not-italic text-opacity-70"
+      base: "font-inter text-[26px] leading-[1.2] [text-shadow:rgba(255,255,255,0.5)_0px_-2px_2px] capitalize tracking-[-2%]",
+      subtitle: "text-opacity-70"
     },
-    artistSection: "box-border content-stretch flex flex-col gap-[6px] items-start justify-start leading-[0] not-italic px-0 py-[12px] relative rounded-[14px] shrink-0 text-[#001d4d] w-full",
-    artistLabel: "flex flex-col font-bold justify-center relative shrink-0 text-[16px] w-full",
-    artistNames: "font-medium relative shrink-0 text-[18px] w-full",
+    artistSection: "flex flex-col gap-[3px] items-start justify-start px-0 py-[12px] relative rounded-[14px] text-[#001d4d] w-full font-inter",
+    artistLabel: "flex flex-col font-semibold justify-center relative text-[14px] sm:text-[16px] w-full font-inter",
+    artistNames: "font-regular relative text-[14px] sm:text-[16px] w-full font-inter",
     image: "w-full",
-    imageContainer: "bg-center bg-cover bg-no-repeat rounded-[4px] w-full h-auto aspect-[4/3] mb-6",
+    imageContainer: "bg-center bg-cover bg-no-repeat rounded-[4px] w-full h-auto aspect-[4/2] mb-2",
     features: "relative w-full",
-    featureItem: "px-0 py-[12px] relative shrink-0 w-full border-t border-solid break-words tracking-[0px]",
-    featureText: "leading-[1.4] text-[14px]",
-    featureTextBold: "font-bold"
+    featureItem: "px-0 py-[12px] relative w-full border-t border-solid break-words font-inter",
+    featureText: "leading-[1.4] text-[11px] md:text-[13px] font-geist-mono font-light tracking-[-1%]",
+    featureTextBold: "font-bold font-inter"
   },
   header: {
-    container: "flex flex-col lg:flex-row items-start lg:items-center justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-t border-[#444444] pt-6",
+    container: "flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-t border-[#ffffff] pt-6 z-50",
     // border: "border-t border-[#444444] mb-8 lg:mb-0",
-    leftSection: "flex flex-col items-start justify-start w-full lg:w-auto text-left",
-    label: "flex flex-col font-bold justify-start not-italic relative shrink-0 text-[14px] leading-[1.2] tracking-[3%] lg:text-[19px] text-[rgba(0,0,0,0.6)] text-left",
-    titleSection: "flex flex-col gap-3 lg:gap-0 items-start justify-start w-full lg:w-auto",
-    title: "capitalize font-black text-[#111111] text-[36px] text-left",
-    subtitle: "relative shrink-0 text-[16px] lg:text-[20px] text-[rgba(17,17,17,0.64)] text-left max-w-[600px]",
-    ctaButton: "bg-[#111111] box-border content-stretch flex gap-[12px] isolate items-center justify-center overflow-clip px-[20px] lg:px-[24px] py-[14px] lg:py-[16px] relative rounded-[8px] shadow-[0px_1px_22.1px_0px_rgba(211,242,39,0.48),0px_1px_3px_0px_rgba(0,0,0,0.08),0px_4px_40px_0px_rgba(0,89,7,0.48)] shrink-0 cursor-pointer hover:shadow-[0px_2px_30px_0px_rgba(211,242,39,0.6)] transition-all duration-300 mt-6 lg:mt-0",
-    ctaText: "[text-shadow:rgba(0,89,7,0.48)_0px_4px_40px,rgba(0,0,0,0.08)_0px_1px_3px] flex flex-col font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] lg:text-[19px] text-center text-nowrap text-white z-[3]",
+    leftSection: "flex flex-col items-center lg:items-start justify-start w-full text-center lg:text-left",
+    label: "flex flex-col font-bold justify-start relative text-[14px] leading-[1.2] tracking-[3%] lg:text-[19px] text-[rgba(0,0,0,0.6)] text-left font-inter",
+    titleSection: "flex flex-col gap-2 lg:gap-0 items-center lg:items-start justify-start w-full lg:w-auto",
+    title: "capitalize font-medium text-[#ffffff] leading-[1.2] text-[36px] text-center lg:text-left font-inter",
+    subtitle: "relative font-inter text-[16px] md:text-[18px] text-[#cccccc] text-center lg:text-left",
+    ctaButton: [
+   "bg-gradient-to-b",
+   "from-white/100",
+   "to-[#cfcfcf]",
+   "box-border",
+   "border-1",
+   "border-white/100",
+   "flex",
+   "gap-3",
+   "items-center",
+   "justify-center",
+   "px-6",
+   "py-4",
+   "mt-6",
+   "sm:mt-0",
+   "relative",
+   "rounded-[16px]",
+   "shadow-[0px_1px_22.1px_0px_rgba(211,242,39,0.48),0px_1px_3px_0px_rgba(0,0,0,0.08),0px_4px_40px_0px_rgba(0,89,7,0.48)]",
+   "shrink-0",
+   "cursor-pointer",
+   "hover:shadow-[0px_2px_30px_0px_rgba(211,242,39,0.6),0px_2px_5px_0px_rgba(0,0,0,0.12)]",
+   "transition-all",
+   "duration-300",
+   "hover:scale-105",
+    ].join(" "),
+    ctaText: [
+        "flex",
+        "flex-col",
+        "justify-center",
+        "items-center",
+        "font-inter",
+        "font-regular",
+        "text-black/80",
+        "text-[18px]",
+        "tracking-[-1%]",
+        "text-center",
+        "text-nowrap",
+        "leading-[0]",
+        "relative",
+        "shrink-0",
+        "[text-shadow:rgba(0,89,7,0.48)_0px_4px_40px,rgba(0,0,0,0.08)_0px_1px_3px,rgba(211,242,39,0.48)_0px_1px_22.1px]",
+
+    ].join(" "),
     ctaBlur: "absolute blur-[25px] bottom-[-211px] filter left-[-25px] size-[310px] z-[1]"
   },
   cardsContainer: "w-full max-w-7xl mx-auto p-0"
@@ -96,12 +137,9 @@ function PoolCard({ title, subtitle, artistNames, image, icon, theme, features }
       </div>
       
       {/* Title */}
-      <div 
-        className={SHARED_STYLES.card.title.base}
-        style={{ color: themeColors.titleColor }}
-      >
-        <p>
-          <span>{title}</span>
+      <div>
+        <p className={SHARED_STYLES.card.title.base} style={{ color: themeColors.titleColor }}>
+          <span >{title}</span>
           <br aria-hidden="true" />
           <span className={SHARED_STYLES.card.title.subtitle} style={{ color: themeColors.subtitleColor }}>
             {subtitle}
@@ -129,7 +167,7 @@ function PoolCard({ title, subtitle, artistNames, image, icon, theme, features }
       
       {/* Features */}
       <div className={SHARED_STYLES.card.features}>
-        <div className="content-stretch flex flex-col items-start justify-start relative shrink-0 w-full">
+        <div className="flex flex-col items-start justify-start relative w-full">
           {features.map((feature, index) => (
             <div 
               key={index} 
@@ -211,26 +249,34 @@ function PoolCardsGrid() {
       theme: "general",
       features: [
         {
-          text: "Earn 12% APR • Stable yields on USDC / USDT"
-        },
+            text: "Earn 12% APR"
+          },
+          {
+              text: "Stable yields on USDC / USDT"
+            },
         {
-          text: "Earn $KYD Rewards from ALL venues in our network, across genres"
+          text: "Yield powered by every live venue in our network",
+          boldParts: ["every", "live", "venue"]
+
         }
       ]
     },
     {
       title: "Electronic Music",
       subtitle: "Genre Venue Pool",
-      artistNames: "Drake, Taylor Swift, Bad Bunny, and more",
+      artistNames: "Calvin Harris, The Chainsmokers, Marshmello",
       image: imgRectangle53,
       icon: imgVector1,
       theme: "electronic",
       features: [
         {
-          text: "Earn 12% APR • Stable yields on USDC / USDT"
-        },
+            text: "Earn 12% APR"
+          },
+          {
+              text: "Stable yields on USDC / USDT"
+            },
         {
-          text: "Earn $KYD Rewards from ALL venues in our network, across electronic music genre",
+          text: "Yield generated across electronic live shows",
           boldParts: ["ALL", "venues", "electronic", "music", "genre"]
         }
       ]
@@ -238,16 +284,20 @@ function PoolCardsGrid() {
     {
       title: "Rock & Roll",
       subtitle: "General Venue Pool",
-      artistNames: "Drake, Taylor Swift, Bad Bunny, and more",
+      artistNames: "Foo Fighters, The Rolling Stones, Imagine Dragons",
       image: imgRectangle54,
       icon: imgVector2,
       theme: "rock",
       features: [
         {
-          text: "Earn 12% APR • Stable yields on USDC / USDT"
+          text: "Earn 12% APR"
         },
         {
-          text: "Earn $KYD Rewards from ALL venues in our network, across genres"
+            text: "Stable yields on USDC / USDT"
+          },
+        {
+          text: "Yield generated across rock shows",
+          boldParts: ["ALL", "venues","across", "rock", "genres"]
         }
       ]
     }
@@ -277,9 +327,9 @@ export function LendingPoolOptions2({ onNavigateToDashboard }: { onNavigateToDas
   return (
     <div
       className="
-        bg-[rgba(255,255,255,0.95)]
+        rounded-[40px]
+        bg-black/80
         backdrop-blur-[20px]
-        backdrop-saturate-300
         backdrop-contrast-190
         backdrop-brightness-100
         w-full
@@ -291,7 +341,7 @@ export function LendingPoolOptions2({ onNavigateToDashboard }: { onNavigateToDas
         gap-12
         py-12
         px-4
-        font-['ABC_Diatype_Unlicensed_Trial:Regular',_'Helvetica',_sans-serif]
+        font-inter
       "
       data-name="mid piece"
     >

@@ -88,7 +88,6 @@ export default function App() {
         onNavigateToLanding={navigateToLanding}
         onNavigateToStaking={navigateToStaking}
         onNavigateToLending={navigateToDashboard}
-        currentPage="lend"
       />
     </div>
   );

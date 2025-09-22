@@ -201,26 +201,26 @@ function CoinSelect({
 
       {/* Dropdown Options */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#e2e2e2] rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.15)] z-50 overflow-hidden min-w-full">
+        <div className="absolute top-full left-0 mt-2 bg-white border border-[#e2e2e2] rounded-[12px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.15)] z-50 overflow-hidden w-full min-w-[120px]">
           {COIN_OPTIONS.map((coin) => (
             <div
               key={coin.symbol}
-              className="flex gap-1 md:gap-1.5 items-center px-2 md:px-3 py-2 md:py-2.5 cursor-pointer hover:bg-gray-50 transition-colors"
+              className="flex gap-2 md:gap-1.5 items-center px-4 md:px-3 py-4 md:py-2.5 cursor-pointer hover:bg-gray-50 transition-colors min-h-[56px] md:min-h-[48px]"
               onClick={() => handleOptionSelect(coin)}
             >
-              <div className="relative shrink-0 size-5 md:size-6 flex items-center justify-center">
+              <div className="relative shrink-0 size-6 md:size-6 flex items-center justify-center">
                 {coin.symbol === "USDT" ? (
-                  <div className="scale-[0.67]">
+                  <div className="scale-[0.8] md:scale-[0.67]">
                     <TetherIcon isSelected={false} />
                   </div>
                 ) : (
-                  <div className="scale-[0.67]">
+                  <div className="scale-[0.8] md:scale-[0.67]">
                     <UsdcIcon isSelected={false} />
                   </div>
                 )}
               </div>
-              <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#1a202c] text-sm md:text-base text-nowrap tracking-[0.2px]">
-                <p className="leading-[1.2] whitespace-pre">
+              <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#1a202c] text-base md:text-base text-nowrap tracking-[0.2px]">
+                <p className="leading-[1.2] whitespace-pre font-medium">
                   {coin.symbol}
                 </p>
               </div>
@@ -332,7 +332,9 @@ function DepositInputAndCoinSelect({
         <div className="flex items-center justify-between p-4 md:p-6 w-full">
           <input
             ref={inputRef}
-            type="text"
+            type="tel"
+            inputMode="decimal"
+            pattern="[0-9]*"
             value={displayValue}
             onChange={handleInputChange}
             placeholder="Amount"
@@ -384,7 +386,7 @@ function CommitmentButton({
     "text-black",
     "border",
     "border-[1px]",
-    "border-[#dddddd]",
+    "border-[#aaaaaa]",
     "shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
     // "hover:bg-[#c9ee1f]",
     // "hover:border-[#aaaaaa]",
@@ -500,7 +502,7 @@ function ExpectedYield({
         <div className="grid grid-cols-2 gap-4 divide-x divide-[#e8e8e8] md:gap-6">
           {/* Expected KYD */}
           <div className="flex flex-col gap-3 md:gap-3 p-4 md:p-6">
-            <div className="font-geist-mono text-[#888888] text-sm md:text-base tracking-[-3%]">
+            <div className="font-geist-mono text-[#444444] text-sm md:text-base tracking-[-3%]">
               <p className="leading-[1.2]">
                 <span className="block md:inline">Expected </span>
                 <span className="block md:inline">$KYD</span>
@@ -520,7 +522,7 @@ function ExpectedYield({
 
           {/* Estimated Yield */}
           <div className="flex flex-col gap-3 md:gap-3 p-4 md:p-6">
-            <div className="font-geist-mono text-[#888888] text-sm md:text-base tracking-[-3%] text-right md:text-right">
+            <div className="font-geist-mono text-[#444444] text-sm md:text-base tracking-[-3%] text-right md:text-right">
               <p className="leading-[1.2]">Estimated total yield</p>
             </div>
             <div className="flex gap-2 md:gap-2.5 items-center justify-end md:justify-end">

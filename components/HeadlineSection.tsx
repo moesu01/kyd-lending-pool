@@ -147,7 +147,7 @@ export function HeadlineSection({
         <div
           className={`
             relative flex flex-col gap-8 lg:gap-12 items-center justify-center
-            px-8 md:px-16 py-24 lg:py-[42px]
+            px-8 md:px-16 py-24 lg:py-24
             rounded-[44px] lg:rounded-[88px]
             overflow-visible z-[80]
             before:content-[''] before:absolute before:top-0 before:-left-2 before:-right-2
@@ -156,9 +156,9 @@ export function HeadlineSection({
             before:blur-md before:backdrop-blur-sm before:saturate-225 before:backdrop-contrast-100
           `}
         >
-          <div className="w-[60px] h-[40px] flex items-center justify-center invert">
+          {/* <div className="w-[60px] h-[40px] hidden md:flex items-center justify-center invert">
             <Logo />
-          </div>
+          </div> */}
           <div className="flex flex-col gap-8 items-center justify-start relative shrink-0">
             <ApyCallOut />
             <HeadlineAndSubCopy />
