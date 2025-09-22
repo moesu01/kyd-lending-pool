@@ -1,18 +1,23 @@
 
+// Import existing SVG assets
+import kydCard1 from '../imports/kyd_card_1.svg';
+import kydCard2 from '../imports/kyd_card_2.svg';
+import kydCard3 from '../imports/kyd_card_3.svg';
+
 // Image assets from Figma
-const imgRectangle52 = "http://localhost:3845/assets/5936c381171449d6833b99668fb51e36d3029e96.png";
-const imgRectangle53 = "http://localhost:3845/assets/9c5909aa7d380d35410094c93e5deff28f368440.png";
-const imgRectangle54 = "http://localhost:3845/assets/488d74582099b3a7e5754cbef6eca5906c55c1b7.png";
-const imgVector = "http://localhost:3845/assets/dd45389bea34be2494976b39837b3f97cc833550.svg";
-const imgVector1 = "http://localhost:3845/assets/7109d8805b3e8d17fd04bfd75272e775f331dd72.svg";
-const imgVector2 = "http://localhost:3845/assets/9c06145a59937c12a739907741ac364d4d92e14c.svg";
+const imgRectangle52 = "/kyd-lending-pool/assets/general.png";
+const imgRectangle53 = "/kyd-lending-pool/assets/electronic.png";
+const imgRectangle54 = "/kyd-lending-pool/assets/rock.png";
+const imgVector = kydCard1;
+const imgVector1 = kydCard2;
+const imgVector2 = kydCard3;
 
 // Shared styling constants for consistent theming
 const SHARED_STYLES = {
   card: {
     container: "backdrop-blur-[19.85px] bg-white flex flex-col items-start justify-between px-4 pt-6 pb-2 relative rounded-[16px] shadow-[0px_4px_22.1px_0px_rgba(85,56,106,0.15),0px_1px_3px_0px_rgba(0,0,0,0.2)] w-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105 hover:shadow-[0px_8px_32px_0px_rgba(85,56,106,0.25)]",
     backgroundBlur: "absolute bg-center bg-cover bg-no-repeat blur-[25px] bottom-0 filter left-[-162px] opacity-20 size-[745px]",
-    icon: "absolute h-[25px] right-[20px] top-[20px] w-[44px]",
+    icon: "absolute h-[29px] right-[20px] top-[20px] w-[48px]",
     title: {
       base: "font-inter text-[26px] leading-[1.2] [text-shadow:rgba(255,255,255,0.5)_0px_-2px_2px] capitalize tracking-[-2%]",
       subtitle: "text-opacity-70"
@@ -28,12 +33,12 @@ const SHARED_STYLES = {
     featureTextBold: "font-bold font-inter"
   },
   header: {
-    container: "flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-t border-[#ffffff] pt-6 z-50",
+    container: "flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-0border-t border-[#ffffff] pt-6 z-50",
     // border: "border-t border-[#444444] mb-8 lg:mb-0",
     leftSection: "flex flex-col items-center lg:items-start justify-start w-full text-center lg:text-left",
     label: "flex flex-col font-bold justify-start relative text-[14px] leading-[1.2] tracking-[3%] lg:text-[19px] text-[rgba(0,0,0,0.6)] text-left font-inter",
     titleSection: "flex flex-col gap-2 lg:gap-0 items-center lg:items-start justify-start w-full lg:w-auto",
-    title: "capitalize font-regular text-[#ffffff] leading-[1.1] tracking-[-3%] text-[32px] md:text-[36px] text-center lg:text-left font-inter",
+    title: "max-w-[380px] capitalize font-regular text-[#ffffff] leading-[1.1] tracking-[-3%] text-[32px] md:text-[36px] text-center lg:text-left font-inter",
     subtitle: "relative font-inter text-[16px] md:text-[18px] text-[#cccccc] text-center lg:text-left",
     ctaButton: [
    "bg-gradient-to-b",

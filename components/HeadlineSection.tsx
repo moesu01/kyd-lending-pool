@@ -1,15 +1,18 @@
 import { StarIcon } from "../imports/svg-t6i4s";
-import kydLogo from "../imports/kyd_logo_1.svg";
+import kydLogo from "../imports/kyd_labs_white.svg?url";
 
 const Logo = () => {
   return (
-    <div className="h-[50px] w-[88px] relative">
-      <img 
-        alt="KYD Logo" 
-        className="block max-w-none size-full" 
-        src={kydLogo} 
-      />
-    </div>
+    <img 
+      alt="KYD Logo" 
+      className="block w-full h-full" 
+      src={kydLogo} 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        objectFit: 'contain'
+      }}
+    />
   );
 }
 
@@ -156,9 +159,9 @@ export function HeadlineSection({
             before:blur-md before:backdrop-blur-sm before:saturate-225 before:backdrop-contrast-100
           `}
         >
-          {/* <div className="w-[60px] h-[40px] hidden md:flex items-center justify-center invert">
+          <div className="w-[120px] h-[auto] flex items-center justify-center relative z-[100]">
             <Logo />
-          </div> */}
+          </div>
           <div className="flex flex-col gap-8 items-center justify-start relative shrink-0">
             <ApyCallOut />
             <HeadlineAndSubCopy />
