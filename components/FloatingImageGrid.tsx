@@ -431,165 +431,168 @@ export function FloatingImageGrid({
       rows: number,
     ) => {
       const imageMeshes: ImageMesh[] = [];
-      const loadPromises: Promise<void>[] = [];
       const defaultScale = calculateDefaultScale(cols, rows);
 
-      // Create cards in nested loops like the example
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-          const promise = new Promise<void>((resolve) => {
-            const imageIndex =
-              (i * rows + j) % imageUrls.length;
-            const imageUrl = imageUrls[imageIndex];
+      // Create placeholder material template
+      const createPlaceholderMaterial = () => new THREE.ShaderMaterial({
+        uniforms: {
+          uTexture: { value: null }, // No texture initially
+          uOpacity: { value: opacity },
+          uRadius: { value: 0.05 }, // Border radius (0.0 to 0.5)
+          uIsLoaded: { value: 0 }, // Flag to indicate if texture is loaded
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+uniform sampler2D uTexture;
+uniform float uOpacity;
+uniform float uRadius;
+uniform float uIsLoaded;
+varying vec2 vUv;
 
-            textureLoader.load(
-              imageUrl,
-              (texture) => {
-                // Configure texture with mobile optimizations
-                texture.minFilter = THREE.LinearFilter;
-                texture.magFilter = THREE.LinearFilter;
-                texture.wrapS = THREE.ClampToEdgeWrapping;
-                texture.wrapT = THREE.ClampToEdgeWrapping;
-                
-                // Mobile-specific texture optimizations
-                if (isMobileRef.current) {
-                  texture.generateMipmaps = false;
-                  texture.anisotropy = 1; // Lower anisotropy for mobile
-                } else {
-                  texture.generateMipmaps = true;
-                  texture.anisotropy = 4;
-                }
-
-                // SRGB color space add:
-               // texture.colorSpace = THREE.SRGBColorSpace;
-
-                // Create geometry and material. Change to MeshLambertMaterial to get ambient lighting effects (similar to Card.#_createMesh())
-                const geometry = new THREE.PlaneGeometry(1, 1);
-                const material = new THREE.ShaderMaterial({
-                  uniforms: {
-                    uTexture: { value: texture },
-                    uOpacity: { value: opacity },
-                    uRadius: { value: 0.05 }, // Border radius (0.0 to 0.5)
-                  },
-                  vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                      vUv = uv;
-                      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                  `,
-                  fragmentShader: `
-  uniform sampler2D uTexture;
-  uniform float uOpacity;
-  uniform float uRadius;
-  varying vec2 vUv;
+void main() {
+  vec2 uv = vUv;
   
-  void main() {
-    vec2 uv = vUv;
-    
-    // Create rounded rectangle mask
-    vec2 center = vec2(0.5);
-    vec2 dist = abs(uv - center);
-    vec2 corner = vec2(0.5) - vec2(uRadius);
-    
-    float mask = 1.0;
-    
-    // Check if we're in the corner regions
-    if (dist.x > corner.x && dist.y > corner.y) {
-      vec2 cornerCenter = corner;
-      vec2 cornerDist = dist - cornerCenter;
-      float cornerRadius = uRadius;
-      float cornerMask = 1.0 - smoothstep(cornerRadius - 0.01, cornerRadius + 0.01, length(cornerDist));
-      mask = cornerMask;
-    }
-    
-    // Sample texture
-    vec4 color = texture2D(uTexture, uv);
-    
-    // Create border stroke effect
-    float borderWidth = 0.02; // Border thickness
-    vec4 borderColor = vec4(1.0, 1.0, 1.0,0.25); // White border with 50% transparency
-    
-    // Create border by checking if we're close to the edge
-    float edgeDistance = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-    
-    // Apply border if we're close to edge but still within the rounded rectangle
+  // Create rounded rectangle mask
+  vec2 center = vec2(0.5);
+  vec2 dist = abs(uv - center);
+  vec2 corner = vec2(0.5) - vec2(uRadius);
+  
+  float mask = 1.0;
+  
+  // Check if we're in the corner regions
+  if (dist.x > corner.x && dist.y > corner.y) {
+    vec2 cornerCenter = corner;
+    vec2 cornerDist = dist - cornerCenter;
+    float cornerRadius = uRadius;
+    float cornerMask = 1.0 - smoothstep(cornerRadius - 0.01, cornerRadius + 0.01, length(cornerDist));
+    mask = cornerMask;
+  }
+  
+  // Sample texture or show placeholder
+  vec4 color;
+  if (uIsLoaded > 0.5) {
+    color = texture2D(uTexture, uv);
+  } else {
+    // Placeholder color (dark gray with subtle pattern)
+    float pattern = sin(uv.x * 20.0) * sin(uv.y * 20.0) * 0.1;
+    color = vec4(0.2 + pattern, 0.2 + pattern, 0.2 + pattern, 1.0);
+  }
+  
+  // Create border stroke effect
+  float borderWidth = 0.02; // Border thickness
+  vec4 borderColor = vec4(1.0, 1.0, 1.0,0.25); // White border with 50% transparency
+  
+  // Create border by checking if we're close to the edge
+  float edgeDistance = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+  
+  // Apply border if we're close to edge but still within the rounded rectangle
 if (edgeDistance < borderWidth && mask > 0.0) {
   color = mix(color, borderColor, borderColor.a);
 }
-    
-    // Apply mask and opacity
-    gl_FragColor = vec4(color.rgb, color.a * mask * uOpacity);
-  }
+  
+  // Apply mask and opacity
+  gl_FragColor = vec4(color.rgb, color.a * mask * uOpacity);
+}
 `,
-                  transparent: true,
-                  side: THREE.DoubleSide,
-                  alphaTest: 0.01,
-                  lights: false,
-                  //colorSpace: THREE.SRGBColorSpace,
-                });
+        transparent: true,
+        side: THREE.DoubleSide,
+        alphaTest: 0.01,
+        lights: false,
+      });
 
-                // Create mesh
-                const mesh = new THREE.Mesh(geometry, material);
+      // Create cards immediately (no waiting for textures)
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const imageIndex = (i * rows + j) % imageUrls.length;
+          const imageUrl = imageUrls[imageIndex];
 
-                // Set scale to default scale
-                mesh.scale.copy(defaultScaleRef.current);
+          // Create geometry and placeholder material
+          const geometry = new THREE.PlaneGeometry(1, 1);
+          const placeholderMaterial = createPlaceholderMaterial();
 
-                // Start at Z = 0
-                mesh.position.z = 0;
+          // Create mesh with placeholder material
+          const mesh = new THREE.Mesh(geometry, placeholderMaterial);
 
-                scene.add(mesh);
+          // Set scale to default scale
+          mesh.scale.copy(defaultScaleRef.current);
 
-                // Create natural drift velocities (much slower)
-                const baseVelocity = new THREE.Vector3(
-                  (Math.random() - 0.5) *
-                    0.001 *
-                    driftIntensity, // Adjustable drift X
-                  (Math.random() - 0.5) *
-                    0.001 *
-                    driftIntensity, // Adjustable drift Y
-                  0, // No Z drift
-                );
+          // Start at Z = 0
+          mesh.position.z = 0;
 
-                // Store mesh data
-                const imageMesh: ImageMesh = {
-                  mesh,
-                  gridPosition: new THREE.Vector2(i, j), // Grid coordinates
-                  velocity: baseVelocity.clone(),
-                  baseVelocity: baseVelocity.clone(),
-                  gridIndex: { row: j, col: i },
-                  defaultScale,
-                  targetScale: new THREE.Vector3().copy(
-                    defaultScaleRef.current,
-                  ),
-                };
+          scene.add(mesh);
 
-                // Set initial target position
-                setTargetPosition(
-                  imageMesh,
-                  cols,
-                  rows,
-                  defaultScale,
-                );
+          // Create natural drift velocities (much slower)
+          const baseVelocity = new THREE.Vector3(
+            (Math.random() - 0.5) * 0.001 * driftIntensity, // Adjustable drift X
+            (Math.random() - 0.5) * 0.001 * driftIntensity, // Adjustable drift Y
+            0, // No Z drift
+          );
 
-                imageMeshes.push(imageMesh);
-                resolve();
-              },
-              undefined,
-              (error) => {
-                console.error("Error loading texture:", error);
-                resolve(); // Continue even if one image fails
-              },
-            );
-          });
+          // Store mesh data
+          const imageMesh: ImageMesh = {
+            mesh,
+            gridPosition: new THREE.Vector2(i, j), // Grid coordinates
+            velocity: baseVelocity.clone(),
+            baseVelocity: baseVelocity.clone(),
+            gridIndex: { row: j, col: i },
+            defaultScale,
+            targetScale: new THREE.Vector3().copy(defaultScaleRef.current),
+          };
 
-          loadPromises.push(promise);
+          // Set initial target position
+          setTargetPosition(imageMesh, cols, rows, defaultScale);
+
+          imageMeshes.push(imageMesh);
         }
       }
 
-      await Promise.all(loadPromises);
-      imageMeshesRef.current = imageMeshes;
+      // Set loading to false immediately so cards appear
       setIsLoading(false);
+      imageMeshesRef.current = imageMeshes;
+
+      // Load textures asynchronously in background
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const imageIndex = (i * rows + j) % imageUrls.length;
+          const imageUrl = imageUrls[imageIndex];
+          const imageMesh = imageMeshes[i * rows + j];
+
+          textureLoader.load(
+            imageUrl,
+            (texture) => {
+              // Configure texture with mobile optimizations
+              texture.minFilter = THREE.LinearFilter;
+              texture.magFilter = THREE.LinearFilter;
+              texture.wrapS = THREE.ClampToEdgeWrapping;
+              texture.wrapT = THREE.ClampToEdgeWrapping;
+              
+              // Mobile-specific texture optimizations
+              if (isMobileRef.current) {
+                texture.generateMipmaps = false;
+                texture.anisotropy = 1; // Lower anisotropy for mobile
+              } else {
+                texture.generateMipmaps = true;
+                texture.anisotropy = 4;
+              }
+
+              // Update material with loaded texture
+              const material = imageMesh.mesh.material as THREE.ShaderMaterial;
+              material.uniforms.uTexture.value = texture;
+              material.uniforms.uIsLoaded.value = 1;
+            },
+            undefined,
+            (error) => {
+              console.error("Error loading texture:", error);
+            },
+          );
+        }
+      }
     };
 
     // Resize handler (similar to Grid.resize())
@@ -723,20 +726,24 @@ if (edgeDistance < borderWidth && mask > 0.0) {
             mesh.position.y = camera.top + margin;
         }
 
-        // Update scale and Z position based on mouse proximity
-        updateScale(imageMesh, deltaTime);
+        // Update scale and Z position based on mouse proximity (skip on mobile)
+        if (!isMobileRef.current) {
+          updateScale(imageMesh, deltaTime);
+        }
       });
 
-      // Subtle camera movement based on mouse (much smaller)
-      const targetCameraX =
-        targetMousePositionRef.current.x * 0.1;
-      const targetCameraY =
-        targetMousePositionRef.current.y * 0.1;
+      // Subtle camera movement based on mouse (skip on mobile)
+      if (!isMobileRef.current) {
+        const targetCameraX =
+          targetMousePositionRef.current.x * 0.1;
+        const targetCameraY =
+          targetMousePositionRef.current.y * 0.1;
 
-      cameraRef.current.position.x +=
-        (targetCameraX - cameraRef.current.position.x) * 0.005;
-      cameraRef.current.position.y +=
-        (targetCameraY - cameraRef.current.position.y) * 0.005;
+        cameraRef.current.position.x +=
+          (targetCameraX - cameraRef.current.position.x) * 0.005;
+        cameraRef.current.position.y +=
+          (targetCameraY - cameraRef.current.position.y) * 0.005;
+      }
 
       rendererRef.current.render(
         sceneRef.current,
