@@ -167,7 +167,7 @@ const MobileMenu = ({ isOpen, onNavigateToStaking, onNavigateToLending, currentP
   };
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-200 ease-out ${isOpen ? 'h-[310px]' : 'h-0'} ${className || ''}`}>
+    <div className={`fixed bottom-0 standalone:bottom-10 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-200 ease-out ${isOpen ? 'h-[310px]' : 'h-0'} ${className || ''}`}>
       {/* Mobile menu overlay */}
       <div className={`fixed inset-0 bg-black/0 z-[-1] transition-opacity duration-150 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${overlayClassName || ''}`} />
       {/* Mobile menu content with same gradient blur as navbar */}
