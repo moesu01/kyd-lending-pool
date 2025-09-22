@@ -373,8 +373,8 @@ export function FloatingImageGrid({
       viewSize * aspect,
       viewSize,
       -viewSize,
-      0.1,
-      1000,
+      0.01, // Much smaller near plane to prevent Z-fighting
+      100, // Smaller far plane for better precision
     );
     camera.position.z = 5;
     cameraRef.current = camera;
@@ -392,12 +392,14 @@ export function FloatingImageGrid({
       powerPreference: isMobileRef.current ? "low-power" : "high-performance",
       preserveDrawingBuffer: false, // Better for mobile performance
       failIfMajorPerformanceCaveat: false, // Allow fallback on mobile
+      logarithmicDepthBuffer: false, // Disable for better mobile performance
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     
-    // Lower pixel ratio on mobile to improve performance
+    // Optimize pixel ratio for mobile to prevent flickering
     const maxPixelRatio = isMobileRef.current ? 1 : 2;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
+    renderer.setPixelRatio(pixelRatio);
     
     // Mobile-specific optimizations
     if (isMobileRef.current) {
@@ -528,8 +530,8 @@ if (edgeDistance < borderWidth && mask > 0.0) {
           // Set scale to default scale
           mesh.scale.copy(defaultScaleRef.current);
 
-          // Start at Z = 0
-          mesh.position.z = 0;
+          // Start at Z = 0 with slight offset to prevent Z-fighting
+          mesh.position.z = (i * rows + j) * 0.001; // Tiny Z offset per card
 
           scene.add(mesh);
 
@@ -602,48 +604,53 @@ if (edgeDistance < borderWidth && mask > 0.0) {
       }
     };
 
-    // Resize handler (similar to Grid.resize())
+    // Resize handler with throttling to prevent scroll-related resizing
+    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
       if (!cameraRef.current || !rendererRef.current) return;
 
-      const newGrid = calculateGridSize();
-      setGridDimensions(newGrid);
+      // Throttle resize events to prevent scroll-related flickering
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newGrid = calculateGridSize();
+        setGridDimensions(newGrid);
 
-      // Update camera
-      const aspect = window.innerWidth / window.innerHeight;
-      const viewSize = 8;
-      cameraRef.current.left = -viewSize * aspect;
-      cameraRef.current.right = viewSize * aspect;
-      cameraRef.current.top = viewSize;
-      cameraRef.current.bottom = -viewSize;
-      cameraRef.current.updateProjectionMatrix();
+        // Update camera
+        const aspect = window.innerWidth / window.innerHeight;
+        const viewSize = 8;
+        cameraRef.current!.left = -viewSize * aspect;
+        cameraRef.current!.right = viewSize * aspect;
+        cameraRef.current!.top = viewSize;
+        cameraRef.current!.bottom = -viewSize;
+        cameraRef.current!.updateProjectionMatrix();
 
-      rendererRef.current.setSize(
-        window.innerWidth,
-        window.innerHeight,
-      );
+        rendererRef.current!.setSize(
+          window.innerWidth,
+          window.innerHeight,
+        );
 
-      // Update scale system
-      setScaleSystem(newGrid.cols, newGrid.rows);
+        // Update scale system
+        setScaleSystem(newGrid.cols, newGrid.rows);
 
-      // Recreate grid with new dimensions
-      // Clear existing meshes
-      imageMeshesRef.current.forEach(({ mesh }) => {
-        sceneRef.current?.remove(mesh);
-        if (mesh.geometry) mesh.geometry.dispose();
-        if (mesh.material) {
-          if (Array.isArray(mesh.material)) {
-            mesh.material.forEach((material) =>
-              material.dispose(),
-            );
-          } else {
-            mesh.material.dispose();
+        // Recreate grid with new dimensions
+        // Clear existing meshes
+        imageMeshesRef.current.forEach(({ mesh }) => {
+          sceneRef.current?.remove(mesh);
+          if (mesh.geometry) mesh.geometry.dispose();
+          if (mesh.material) {
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach((material) =>
+                material.dispose(),
+              );
+            } else {
+              mesh.material.dispose();
+            }
           }
-        }
-      });
+        });
 
-      // Create new grid
-      createImageGrid(newGrid.cols, newGrid.rows);
+        // Create new grid
+        createImageGrid(newGrid.cols, newGrid.rows);
+      }, 250); // 250ms delay to prevent scroll-related resizing
     };
 
     // Animation loop with delta time (similar to your update system)
