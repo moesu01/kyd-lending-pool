@@ -604,53 +604,78 @@ if (edgeDistance < borderWidth && mask > 0.0) {
       }
     };
 
-    // Resize handler with throttling to prevent scroll-related resizing
+    // Resize handler with smart throttling to prevent animation restarts
     let resizeTimeout: NodeJS.Timeout;
+    let lastWindowSize = { width: window.innerWidth, height: window.innerHeight };
+    
     const handleResize = () => {
       if (!cameraRef.current || !rendererRef.current) return;
 
       // Throttle resize events to prevent scroll-related flickering
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        const newGrid = calculateGridSize();
-        setGridDimensions(newGrid);
+        const currentSize = { width: window.innerWidth, height: window.innerHeight };
+        const sizeChange = Math.abs(currentSize.width - lastWindowSize.width) + 
+                          Math.abs(currentSize.height - lastWindowSize.height);
+        
+        // Only recreate grid if there's a significant size change (>50px)
+        if (sizeChange > 50) {
+          lastWindowSize = currentSize;
+          
+          const newGrid = calculateGridSize();
+          setGridDimensions(newGrid);
 
-        // Update camera
-        const aspect = window.innerWidth / window.innerHeight;
-        const viewSize = 8;
-        cameraRef.current!.left = -viewSize * aspect;
-        cameraRef.current!.right = viewSize * aspect;
-        cameraRef.current!.top = viewSize;
-        cameraRef.current!.bottom = -viewSize;
-        cameraRef.current!.updateProjectionMatrix();
+          // Update camera
+          const aspect = window.innerWidth / window.innerHeight;
+          const viewSize = 8;
+          cameraRef.current!.left = -viewSize * aspect;
+          cameraRef.current!.right = viewSize * aspect;
+          cameraRef.current!.top = viewSize;
+          cameraRef.current!.bottom = -viewSize;
+          cameraRef.current!.updateProjectionMatrix();
 
-        rendererRef.current!.setSize(
-          window.innerWidth,
-          window.innerHeight,
-        );
+          rendererRef.current!.setSize(
+            window.innerWidth,
+            window.innerHeight,
+          );
 
-        // Update scale system
-        setScaleSystem(newGrid.cols, newGrid.rows);
+          // Update scale system
+          setScaleSystem(newGrid.cols, newGrid.rows);
 
-        // Recreate grid with new dimensions
-        // Clear existing meshes
-        imageMeshesRef.current.forEach(({ mesh }) => {
-          sceneRef.current?.remove(mesh);
-          if (mesh.geometry) mesh.geometry.dispose();
-          if (mesh.material) {
-            if (Array.isArray(mesh.material)) {
-              mesh.material.forEach((material) =>
-                material.dispose(),
-              );
-            } else {
-              mesh.material.dispose();
+          // Recreate grid with new dimensions
+          // Clear existing meshes
+          imageMeshesRef.current.forEach(({ mesh }) => {
+            sceneRef.current?.remove(mesh);
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((material) =>
+                  material.dispose(),
+                );
+              } else {
+                mesh.material.dispose();
+              }
             }
-          }
-        });
+          });
 
-        // Create new grid
-        createImageGrid(newGrid.cols, newGrid.rows);
-      }, 250); // 250ms delay to prevent scroll-related resizing
+          // Create new grid
+          createImageGrid(newGrid.cols, newGrid.rows);
+        } else {
+          // Just update camera and renderer for minor changes
+          const aspect = window.innerWidth / window.innerHeight;
+          const viewSize = 8;
+          cameraRef.current!.left = -viewSize * aspect;
+          cameraRef.current!.right = viewSize * aspect;
+          cameraRef.current!.top = viewSize;
+          cameraRef.current!.bottom = -viewSize;
+          cameraRef.current!.updateProjectionMatrix();
+
+          rendererRef.current!.setSize(
+            window.innerWidth,
+            window.innerHeight,
+          );
+        }
+      }, 300); // Slightly longer delay to prevent scroll-related resizing
     };
 
     // Animation loop with delta time (similar to your update system)

@@ -61,7 +61,7 @@ export const TopBlurSection = () => {
             {currentNumber.toString().padStart(3, '0')} 
             <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse ml-2 mr-2 mb-1 align-middle"></span>
             LIVE EVENTS
-          </span> → $KYD → LENDING POOL
+          </span> GENERATING $KYD
          
         </p>
       </div>

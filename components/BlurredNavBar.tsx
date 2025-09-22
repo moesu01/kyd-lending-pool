@@ -10,6 +10,28 @@ import HandCoinsIcon from "../imports/HandCoins.svg";
 // @ts-ignore
 import StackIcon from "../imports/Stack.svg";
 
+// Custom hook to handle viewport height for mobile browsers
+const useViewportHeight = () => {
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Set initial height
+    setViewportHeight();
+
+    // Recalculate on resize
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
+  }, []);
+};
+
 const Logo = ({ onClick, className }: { onClick?: () => void; className?: string }) => (
   <div 
     className={`relative shrink-0 h-[auot] w-[60px] invert ${onClick ? 'cursor-pointer hover:scale-95 transition-opacity' : ''} ${className || ''}`}
@@ -167,7 +189,13 @@ const MobileMenu = ({ isOpen, onNavigateToStaking, onNavigateToLending, currentP
   };
 
   return (
-    <div className={`fixed bottom-0 standalone:bottom-10 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-200 ease-out ${isOpen ? 'h-[310px]' : 'h-0'} ${className || ''}`}>
+    <div 
+      className={`fixed bottom-0 standalone:bottom-10 left-0 right-0 z-[60] sm:hidden overflow-hidden transition-all duration-200 ease-out ${isOpen ? 'h-[310px]' : 'h-0'} ${className || ''}`}
+      style={{
+        bottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)'
+      }}
+    >
       {/* Mobile menu overlay */}
       <div className={`fixed inset-0 bg-black/0 z-[-1] transition-opacity duration-150 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${overlayClassName || ''}`} />
       {/* Mobile menu content with same gradient blur as navbar */}
@@ -305,6 +333,9 @@ export const BlurredNavBar = ({
   mobileMenuOverlayClassName
 }: BlurredNavBarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Use the viewport height hook to handle mobile browser address bar resizing
+  useViewportHeight();
 
   const handleMobileMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -340,6 +371,10 @@ export const BlurredNavBar = ({
           ${navClassName || ''}
           ${className || ''}
         `}
+        style={{
+          bottom: 'env(safe-area-inset-bottom, 0px)',
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)'
+        }}
       >
         {/* Navbar Content */}
         <div className="relative z-10 flex items-center justify-between px-6 py-4 mx-auto max-w-3xl">

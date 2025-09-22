@@ -206,3 +206,15 @@ html {
   font-size: var(--font-size);
   background: #000;
 }
+
+/* Mobile viewport height fix for address bar resizing */
+:root {
+  --vh: 1vh;
+}
+
+/* Ensure fixed bottom elements account for safe area */
+@supports (padding: max(0px)) {
+  .fixed-bottom-safe {
+    bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+  }
+}
