@@ -131,6 +131,17 @@ export function FloatingImageGrid({
 
   // Timing for delta time
   const lastTimeRef = useRef(Date.now());
+  
+  // Mobile detection and performance optimization
+  const isMobileRef = useRef(false);
+  const isScrollingRef = useRef(false);
+
+  // Mobile detection utility
+  const detectMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           ('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0);
+  };
 
   // Calculate dynamic grid size based on window dimensions
   const calculateGridSize = () => {
@@ -234,6 +245,22 @@ export function FloatingImageGrid({
     const y = -(clientY / window.innerHeight) * 2 + 1;
 
     targetMousePositionRef.current.set(x, y);
+  };
+
+  // Handle scroll events for mobile optimization
+  const handleScrollStart = () => {
+    if (isMobileRef.current) {
+      isScrollingRef.current = true;
+    }
+  };
+
+  const handleScrollEnd = () => {
+    if (isMobileRef.current) {
+      // Delay to prevent flickering during scroll momentum
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 150);
+    }
   };
 
   // Lerp mouse position (similar to Grid.#_lerpMousePosition)
@@ -354,16 +381,28 @@ export function FloatingImageGrid({
     // Initialize scale system
     setScaleSystem(initialGrid.cols, initialGrid.rows);
 
-    // Renderer setup
+    // Detect mobile for performance optimizations
+    isMobileRef.current = detectMobile();
+    
+    // Renderer setup with mobile optimizations
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobileRef.current, // Disable anti-aliasing on mobile
       alpha: true,
-      powerPreference: "high-performance",
+      powerPreference: isMobileRef.current ? "low-power" : "high-performance",
+      preserveDrawingBuffer: false, // Better for mobile performance
+      failIfMajorPerformanceCaveat: false, // Allow fallback on mobile
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, 2),
-    );
+    
+    // Lower pixel ratio on mobile to improve performance
+    const maxPixelRatio = isMobileRef.current ? 1 : 2;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
+    
+    // Mobile-specific optimizations
+    if (isMobileRef.current) {
+      renderer.shadowMap.enabled = false;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    }
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -406,11 +445,20 @@ export function FloatingImageGrid({
             textureLoader.load(
               imageUrl,
               (texture) => {
-                // Configure texture
+                // Configure texture with mobile optimizations
                 texture.minFilter = THREE.LinearFilter;
                 texture.magFilter = THREE.LinearFilter;
                 texture.wrapS = THREE.ClampToEdgeWrapping;
                 texture.wrapT = THREE.ClampToEdgeWrapping;
+                
+                // Mobile-specific texture optimizations
+                if (isMobileRef.current) {
+                  texture.generateMipmaps = false;
+                  texture.anisotropy = 1; // Lower anisotropy for mobile
+                } else {
+                  texture.generateMipmaps = true;
+                  texture.anisotropy = 4;
+                }
 
                 // SRGB color space add:
                // texture.colorSpace = THREE.SRGBColorSpace;
@@ -606,16 +654,22 @@ if (edgeDistance < borderWidth && mask > 0.0) {
       // Update mouse position with smooth lerping
       lerpMousePosition(deltaTime);
 
+      // Skip intensive updates during scroll on mobile
+      const shouldUpdate = !isMobileRef.current || !isScrollingRef.current;
+
       // Update image positions and effects
       imageMeshesRef.current.forEach((imageMesh) => {
         const { mesh, velocity, baseVelocity } = imageMesh;
 
-        // Only apply drift if enabled
-        if (driftEnabled) {
+        // Only apply drift if enabled and not scrolling on mobile
+        if (driftEnabled && shouldUpdate) {
           // Calculate mouse influence on velocity (simplified for drift)
+          const camera = cameraRef.current;
+          if (!camera) return;
+          
           const meshScreenPos = mesh.position
             .clone()
-            .project(cameraRef.current);
+            .project(camera);
           const distanceToMouse = Math.sqrt(
             Math.pow(
               meshScreenPos.x -
@@ -657,7 +711,6 @@ if (edgeDistance < borderWidth && mask > 0.0) {
           mesh.position.add(velocity);
 
           // Wrap around screen edges
-          const camera = cameraRef.current;
           const margin = 2;
 
           if (mesh.position.x > camera.right + margin)
@@ -696,6 +749,14 @@ if (edgeDistance < borderWidth && mask > 0.0) {
     window.addEventListener("mousemove", updateMousePosition);
     window.addEventListener("touchmove", updateMousePosition);
     window.addEventListener("resize", handleResize);
+    
+    // Mobile scroll optimization listeners
+    if (isMobileRef.current) {
+      window.addEventListener("scroll", handleScrollStart, { passive: true });
+      window.addEventListener("touchstart", handleScrollStart, { passive: true });
+      window.addEventListener("touchend", handleScrollEnd, { passive: true });
+      window.addEventListener("scrollend", handleScrollEnd, { passive: true });
+    }
 
     // Initialize
     createImageGrid(initialGrid.cols, initialGrid.rows).then(
@@ -715,6 +776,14 @@ if (edgeDistance < borderWidth && mask > 0.0) {
         updateMousePosition,
       );
       window.removeEventListener("resize", handleResize);
+      
+      // Clean up mobile scroll listeners
+      if (isMobileRef.current) {
+        window.removeEventListener("scroll", handleScrollStart);
+        window.removeEventListener("touchstart", handleScrollStart);
+        window.removeEventListener("touchend", handleScrollEnd);
+        window.removeEventListener("scrollend", handleScrollEnd);
+      }
 
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);

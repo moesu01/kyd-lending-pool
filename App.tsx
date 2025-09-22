@@ -81,7 +81,7 @@ export default function App() {
               imageScale={0.8}
               gridCellSize={70}
               driftEnabled={true}
-              driftIntensity={.75}
+              driftIntensity={.5}
               hoverScale={1.5}
               hoverDistance={0.35}
               ambientLightColor="#ffffff"
