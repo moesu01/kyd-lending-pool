@@ -181,7 +181,8 @@ const MobileMenu = ({ isOpen, onNavigateToStaking, onNavigateToLending, currentP
           before:-left-2
           before:-right-2
           before:rounded-t-2xl
-          before:-bottom-2
+          before:-bottom-12
+          standalone:before:-bottom-16
           before:bg-gradient-to-t
           before:from-background/100
           before:via-background/90
