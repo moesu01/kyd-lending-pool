@@ -15,7 +15,7 @@ const imgVector2 = kydCard3;
 // Shared styling constants for consistent theming
 const SHARED_STYLES = {
   card: {
-    container: "backdrop-blur-[19.85px] bg-white flex flex-col items-start justify-between px-4 pt-6 pb-2 relative rounded-[16px] shadow-[0px_4px_22.1px_0px_rgba(85,56,106,0.15),0px_1px_3px_0px_rgba(0,0,0,0.2)] w-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105 hover:shadow-[0px_8px_32px_0px_rgba(85,56,106,0.25)]",
+    container: "backdrop-blur-[19.85px] bg-white flex flex-col items-start justify-between px-4 pt-6 pb-2 relative rounded-[32px] shadow-[0px_4px_22.1px_0px_rgba(85,56,106,0.15),0px_1px_3px_0px_rgba(0,0,0,0.2)] w-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105 hover:shadow-[0px_8px_32px_0px_rgba(85,56,106,0.25)]",
     backgroundBlur: "absolute bg-center bg-cover bg-no-repeat blur-[25px] bottom-0 filter left-[-162px] opacity-20 size-[745px]",
     icon: "absolute h-[29px] right-[20px] top-[20px] w-[48px]",
     title: {
@@ -33,12 +33,12 @@ const SHARED_STYLES = {
     featureTextBold: "font-bold font-inter"
   },
   header: {
-    container: "flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-0border-t border-[#ffffff] pt-6 z-50",
+    container: "flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between h-full w-full max-w-7xl mx-auto px-0 py-0 border-0border-t border-[#ffffff] pt-0 z-50",
     // border: "border-t border-[#444444] mb-8 lg:mb-0",
     leftSection: "flex flex-col items-center lg:items-start justify-start w-full text-center lg:text-left",
     label: "flex flex-col font-bold justify-start relative text-[14px] leading-[1.2] tracking-[3%] lg:text-[19px] text-[rgba(0,0,0,0.6)] text-left font-inter",
     titleSection: "flex flex-col gap-2 lg:gap-0 items-center lg:items-start justify-start w-full lg:w-auto",
-    title: "max-w-[380px] capitalize font-regular text-[#ffffff] leading-[1.1] tracking-[-3%] text-[32px] md:text-[36px] text-center lg:text-left font-inter",
+    title: "max-w-[380px] sm:max-w-[none] capitalize font-regular text-[#ffffff] leading-[1.1] tracking-[-3%] text-[32px] md:text-[36px] text-center lg:text-left font-inter",
     subtitle: "relative font-inter text-[16px] md:text-[18px] text-[#cccccc] text-center lg:text-left",
     ctaButton: [
    "bg-gradient-to-b",
@@ -54,7 +54,7 @@ const SHARED_STYLES = {
    "px-6",
    "py-4",
    "mt-6",
-   "sm:mt-0",
+   "sm:mt-1",
    "relative",
    "rounded-[16px]",
    "shadow-[0px_1px_22.1px_0px_rgba(211,242,39,0.48),0px_1px_3px_0px_rgba(0,0,0,0.08),0px_4px_40px_0px_rgba(0,89,7,0.48)]",
@@ -343,7 +343,7 @@ export function LendingPoolOptions2({ onNavigateToDashboard }: { onNavigateToDas
         flex-col
         items-center
         justify-start
-        gap-12
+        gap-0
         py-12
         px-4
         font-inter
@@ -351,8 +351,9 @@ export function LendingPoolOptions2({ onNavigateToDashboard }: { onNavigateToDas
       data-name="mid piece"
     >
     
-      <HeaderSection onNavigateToDashboard={onNavigateToDashboard} />
       <PoolCardsGrid />
+      <HeaderSection onNavigateToDashboard={onNavigateToDashboard} />
+
     </div>
   );
 }

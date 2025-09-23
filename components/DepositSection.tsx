@@ -7,6 +7,16 @@ import {
   imgKydToken,
 } from "../imports/svg-p8nzy";
 
+// Import artist images
+import taylorSwiftImg from "/kyd-lending-pool/assets/taylor swift.png";
+import drakeImg from "/kyd-lending-pool/assets/drake.png";
+import billieImg from "/kyd-lending-pool/assets/billie.png";
+import weekndImg from "/kyd-lending-pool/assets/weeknd.png";
+import arianaGrandeImg from "/kyd-lending-pool/assets/ariana grande.png";
+import postMaloneImg from "/kyd-lending-pool/assets/post malone.png";
+import oliviaRodrigoImg from "/kyd-lending-pool/assets/olivia rodrigo.png";
+import badBunnyImg from "/kyd-lending-pool/assets/bad bunny.png";
+
 interface CommitmentOption {
   years: number;
   multiplier: number;
@@ -469,21 +479,18 @@ function ExpectedYield({
 }: ExpectedYieldProps) {
   const hasValidData = depositAmount > 0 && selectedOption;
 
-  // Calculate KYD yield based on deposit amount and multiplier
+  // Calculate KYD yield based on deposit amount with commitment multiplier
+  const baseKyd = hasValidData
+    ? depositAmount / CONFIG.KYD_CONVERSION_RATE
+    : 0;
   const expectedKyd = hasValidData
-    ? Math.floor(
-        (depositAmount / CONFIG.KYD_CONVERSION_RATE) *
-          selectedOption.multiplier,
-      )
+    ? Math.floor(baseKyd * selectedOption.multiplier)
     : 0;
 
-  // Calculate total USDC yield over commitment period using compound interest
-  // Formula: P * (1 + r)^t - P = total yield over t years
+  // Calculate total USDC yield over commitment period using simple interest
+  // Formula: P * r * t = total yield over t years
   const totalYield = hasValidData
-    ? Math.floor(
-        depositAmount *
-          (Math.pow(1 + CONFIG.APR, selectedOption.years) - 1),
-      )
+    ? Math.floor(depositAmount * CONFIG.APR * selectedOption.years)
     : 0;
 
   const kydDisplay = hasValidData
@@ -545,6 +552,506 @@ function ExpectedYield({
   );
 }
 
+// External link icon SVG
+const ExternalLinkIcon = () => (
+  <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 1L5 5L1 9" stroke="#4f81c9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+interface ArtistReward {
+  id: string;
+  artistName: string;
+  artistImage: string; // placeholder for now
+  eventName: string;
+  date: string;
+  amount: string; // KYD amount
+}
+
+const DUMMY_ARTIST_REWARDS: ArtistReward[] = [
+  {
+    id: "1",
+    artistName: "Taylor Swift",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "The Eras Tour",
+    date: "May 4 '25",
+    amount: "+34 $KYD"
+  },
+  {
+    id: "2",
+    artistName: "Drake",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "It's All A Blur Tour",
+    date: "May 3 '25",
+    amount: "+28 $KYD"
+  },
+  {
+    id: "3",
+    artistName: "Billie Eilish",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "Coachella 2025",
+    date: "May 2 '25",
+    amount: "+42 $KYD"
+  },
+  {
+    id: "4",
+    artistName: "The Weeknd",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "After Hours Til Dawn Tour",
+    date: "May 1 '25",
+    amount: "+31 $KYD"
+  },
+  {
+    id: "5",
+    artistName: "Ariana Grande",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "Sweetener World Tour",
+    date: "Apr 30 '25",
+    amount: "+39 $KYD"
+  },
+  {
+    id: "6",
+    artistName: "Post Malone",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "Twelve Carat Tour",
+    date: "Apr 29 '25",
+    amount: "+25 $KYD"
+  },
+  {
+    id: "7",
+    artistName: "Olivia Rodrigo",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "GUTS World Tour",
+    date: "Apr 28 '25",
+    amount: "+47 $KYD"
+  },
+  {
+    id: "8",
+    artistName: "Bad Bunny",
+    artistImage: "/placeholder-artist.jpg",
+    eventName: "El Último Tour Del Mundo",
+    date: "Apr 27 '25",
+    amount: "+33 $KYD"
+  }
+];
+
+interface ArtistRewardRowProps {
+  reward: ArtistReward;
+  isLast?: boolean;
+}
+
+function ArtistRewardRow({ reward, isLast = false }: ArtistRewardRowProps) {
+  const handleTxClick = () => {
+    console.log(`Opening reward transaction for ${reward.artistName}`);
+    // In a real app, this would open the transaction in a block explorer
+  };
+
+  // Helper function to get the correct image filename for each artist
+  const getArtistImageSrc = (artistName: string) => {
+    const imageMap: { [key: string]: string } = {
+      'Taylor Swift': taylorSwiftImg,
+      'Drake': drakeImg,
+      'Billie Eilish': billieImg,
+      'The Weeknd': weekndImg,
+      'Ariana Grande': arianaGrandeImg,
+      'Post Malone': postMaloneImg,
+      'Olivia Rodrigo': oliviaRodrigoImg,
+      'Bad Bunny': badBunnyImg
+    };
+    
+    const imageSrc = imageMap[artistName] || '/kyd-lending-pool/assets/placeholder.png';
+    console.log(`Loading image for ${artistName}: ${imageSrc}`);
+    return imageSrc;
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row items-center justify-between px-0 py-4 relative shrink-0 w-full">
+      <div aria-hidden="true" className={`absolute border-[#dddddd] inset-0 pointer-events-none ${isLast ? '' : 'border-b'}`} />
+      
+      {/* Mobile Layout - Split container */}
+      <div className="flex md:hidden items-start justify-between w-full gap-4">
+        {/* Left Side: Artist Image, Name, Event */}
+        <div className="flex gap-2 items-center justify-start relative shrink-0 flex-1">
+          <div className="size-12 rounded-full overflow-hidden">
+            <img 
+              className="w-full h-full object-cover" 
+              src={getArtistImageSrc(reward.artistName)} 
+              alt={reward.artistName}
+              onError={(e) => {
+                // Fallback to placeholder if image doesn't exist
+                console.log(`Failed to load image for ${reward.artistName}:`, e.currentTarget.src);
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full bg-gray-300 rounded-full"></div>';
+              }}
+              onLoad={() => {
+                console.log(`Successfully loaded image for ${reward.artistName}`);
+              }}
+            />
+          </div>
+          <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#444444] font-regular text-sm text-nowrap">
+            <p className="leading-[1.4] whitespace-pre">
+              <span className="text-[18px] font-regular display-block">{reward.artistName}</span><br/>
+              <span className="display-block text-[14px] font-regular text-[#666666]">{reward.eventName}</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* Right Side: Amount (top) + Date + Tx Link (bottom) */}
+        <div className="flex flex-col gap-1 items-end justify-center relative shrink-0">
+          {/* Top Line: KYD Reward Amount */}
+          <div className="bg-green-100/20 border border-green-700/20 px-2 py-1 rounded-full">
+            <div className="flex flex-col font-geist-mono justify-center leading-[0] relative shrink-0 text-green-700 font-regular text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">{reward.amount}</p>
+            </div>
+          </div>
+          
+          {/* Bottom Line: Date + Tx Link */}
+          <div className="flex gap-2.5 items-center justify-start relative shrink-0">
+            <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#888888] font-regular text-[12px] text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">{reward.date}</p>
+            </div>
+            <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#4f81c9] text-sm text-nowrap">
+              <p className="leading-[1.2] underline whitespace-pre">Tx</p>
+            </div>
+            <div className="h-2.5 relative shrink-0 w-1.5">
+              <ExternalLinkIcon />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Desktop Layout - Single line */}
+      <div className="hidden md:flex items-center justify-between w-full">
+        {/* Artist Image */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[100px]">
+          <div className="size-12 rounded-full overflow-hidden">
+            <img 
+              className="w-full h-full object-cover" 
+              src={getArtistImageSrc(reward.artistName)} 
+              alt={reward.artistName}
+              onError={(e) => {
+                // Fallback to placeholder if image doesn't exist
+                console.log(`Failed to load image for ${reward.artistName}:`, e.currentTarget.src);
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full bg-gray-300 rounded-full"></div>';
+              }}
+              onLoad={() => {
+                console.log(`Successfully loaded image for ${reward.artistName}`);
+              }}
+            />
+          </div>
+        </div>
+        
+        {/* Artist Name and Event */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[180px]">
+          <div className="flex flex-col font-inter justify-center relative shrink-0 text-[#444444] font-regular text-nowrap">
+            <p className="leading-[1.25] whitespace-pre">
+            <span className="text-[17px] font-regular display-block">{reward.artistName}</span><br/>
+            <span className="display-block text-[14px] font-regular text-[#888888]">{reward.eventName}</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* Spacer */}
+        <div className="flex gap-2.5 items-center justify-start shrink-0 w-[100px]" />
+        
+        {/* Amount */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[100px]">
+          <div className="bg-green-100/20 border border-green-700/20 px-2 py-1.5 rounded-full">
+            <div className="flex flex-col font-geist-mono justify-center leading-[0] relative shrink-0 text-green-700 font-regular text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">{reward.amount}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Date */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[80px]">
+          <div className="flex flex-col font-regular justify-center leading-[0] relative shrink-0 text-[#888888] font text-sm text-right">
+            <p className="leading-[1.2] whitespace-pre">{reward.date}</p>
+          </div>
+        </div>
+        
+        {/* Transaction Link */}
+        <div className="flex gap-1.5 items-center justify-end relative shrink-0 cursor-pointer" onClick={handleTxClick}>
+          <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#4f81c9] text-sm text-nowrap">
+            <p className="leading-[1.2] underline whitespace-pre">Tx</p>
+          </div>
+          <div className="h-2.5 relative shrink-0 w-1.5">
+            <ExternalLinkIcon />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ArtistRewardsProps {
+  depositAmount: number;
+  selectedOption: CommitmentOption | null;
+}
+
+function ArtistRewards({ depositAmount, selectedOption }: ArtistRewardsProps) {
+  const hasValidData = depositAmount > 0 && selectedOption;
+
+  return (
+    <div className="flex flex-col items-start justify-start relative shrink-0 w-full">
+      <div className="relative shrink-0 w-full">
+        <div className="bg-clip-padding border-0 border-transparent border-solid box-border flex flex-col gap-0 items-start justify-start relative w-full">
+          {DUMMY_ARTIST_REWARDS.map((reward, index) => (
+            <ArtistRewardRow 
+              key={reward.id} 
+              reward={reward} 
+              isLast={index === DUMMY_ARTIST_REWARDS.length - 1}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function DepositRewardsContainer() {
+  return (
+    <div
+      className="bg-transparent relative rounded-[32px] w-full max-w-[680px] border border-[#dadada]"
+      data-name="deposit rewards container"
+    >
+      <div className="flex flex-col gap-0 w-full">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex flex-col gap-2.5 items-start justify-center relative shrink-0">
+            <div className="relative shrink-0 size-9">
+              <img className="size-full" src={imgKydToken} alt="KYD Token" />
+            </div>
+            <div className="flex flex-col font-inter justify-center leading-[0] font-semibold relative shrink-0 text-[#444444] text-xl md:text-2xl text-nowrap tracking-[0]">
+              <p className="leading-[1.2] whitespace-pre">
+                <span className="inline">$KYD </span>
+                <span className="inline">Rewards</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Artist Rewards List */}
+        <div className="px-2 sm:px-6">
+          <ArtistRewards depositAmount={0} selectedOption={null} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// OUT STUFF - Previous Deposits Section
+interface PreviousDeposit {
+  id: string;
+  depositAmount: number;
+  coinSymbol: string;
+  coinIcon: string;
+  commitmentTerm: string;
+  depositDate: string;
+  maturityDate: string;
+  daysUntilMaturity: number;
+  anticipatedYield: number;
+  kydMultiplier: number;
+}
+
+// Helper function to calculate days between two dates
+const calculateDaysBetween = (startDate: string, endDate: string): number => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = end.getTime() - start.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+const DUMMY_PREVIOUS_DEPOSITS: PreviousDeposit[] = [
+  {
+    id: "1",
+    depositAmount: 50000,
+    coinSymbol: "USDC",
+    coinIcon: imgUsdCoinUsdcLogo1,
+    commitmentTerm: "3 Years",
+    depositDate: "Jan 15, 2024",
+    maturityDate: "Jan 15, 2027",
+    daysUntilMaturity: calculateDaysBetween("Jan 15, 2024", "Jan 15, 2027"),
+    anticipatedYield: 15000,
+    kydMultiplier: 1.5
+  },
+  {
+    id: "2",
+    depositAmount: 25000,
+    coinSymbol: "USDT",
+    coinIcon: img,
+    commitmentTerm: "2 Years",
+    depositDate: "Mar 8, 2024",
+    maturityDate: "Mar 8, 2026",
+    daysUntilMaturity: calculateDaysBetween("Mar 8, 2024", "Mar 8, 2026"),
+    anticipatedYield: 5000,
+    kydMultiplier: 1
+  }
+  // {
+  //   id: "3",
+  //   depositAmount: 100000,
+  //   coinSymbol: "USDC",
+  //   coinIcon: imgUsdCoinUsdcLogo1,
+  //   commitmentTerm: "4 Years",
+  //   depositDate: "Nov 22, 2023",
+  //   maturityDate: "Nov 22, 2027",
+  //   daysUntilMaturity: calculateDaysBetween("Nov 22, 2023", "Nov 22, 2027"),
+  //   anticipatedYield: 40000,
+  //   kydMultiplier: 3
+  // }
+];
+
+interface PreviousDepositRowProps {
+  deposit: PreviousDeposit;
+  isLast?: boolean;
+}
+
+function PreviousDepositRow({ deposit, isLast = false }: PreviousDepositRowProps) {
+  const handleWithdrawClick = () => {
+    console.log(`Withdraw attempt for deposit ${deposit.id} - not yet mature`);
+    // In a real app, this would show a modal explaining the deposit is not yet mature
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row items-center justify-between px-0 py-4 relative shrink-0 w-full">
+      <div aria-hidden="true" className={`absolute border-[#dddddd] inset-0 pointer-events-none ${isLast ? '' : 'border-b'}`} />
+      
+      {/* Mobile Layout - Stacked container */}
+      <div className="flex md:hidden flex-col gap-4 w-full px-4">
+        {/* Top Row: Deposit Info */}
+        <div className="flex gap-3 items-start justify-start relative shrink-0 w-full">
+          <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-[#444444] font-regular text-sm text-nowrap flex-1">
+            <p className="leading-[1.4] whitespace-pre">
+              <span className="text-[12px] font-regular text-[#888888] display-block">Deposited: {deposit.depositDate}</span><br/>
+              <span className="text-[18px] font-semibold display-block">{deposit.depositAmount.toLocaleString()} {deposit.coinSymbol}</span><br/>
+              <span className="display-block text-[14px] font-regular text-[#666666]">{deposit.commitmentTerm} • {deposit.daysUntilMaturity} days left</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* Bottom Row: Yield */}
+        <div className="flex gap-3 items-center justify-start relative shrink-0 w-full">
+          {/* Anticipated Yield */}
+          <div className="bg-blue-100/20 border border-blue-700/20 px-3 py-1.5 rounded-full">
+            <div className="flex flex-col font-geist-mono justify-center leading-[0] relative shrink-0 text-blue-700 font-regular text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">{deposit.anticipatedYield.toLocaleString()} {deposit.coinSymbol} yield</p>
+            </div>
+          </div>
+          
+          {/* Right: Withdraw Button */}
+          {/* <div 
+            className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full cursor-not-allowed"
+            onClick={handleWithdrawClick}
+          >
+            <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">Withdraw</p>
+            </div>
+          </div> */}
+        </div>
+      </div>
+      
+      {/* Desktop Layout - Single line */}
+      <div className="hidden md:flex items-center justify-between w-full">
+        {/* Coin Icon */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[60px]">
+          <div className="size-10 rounded-full overflow-hidden">
+            <img className="w-full h-full object-cover" src={deposit.coinIcon} alt={deposit.coinSymbol} />
+          </div>
+        </div>
+        
+        {/* Deposit Amount and Details */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[200px]">
+          <div className="flex flex-col font-inter justify-center relative shrink-0 text-[#444444] font-semibold text-nowrap">
+            <p className="leading-[1.25] whitespace-pre">
+              <span className="text-[17px] font-semibold display-block">{deposit.depositAmount.toLocaleString()} {deposit.coinSymbol}</span><br/>
+              <span className="display-block text-[14px] font-regular text-[#888888]">{deposit.commitmentTerm} • {deposit.depositDate}</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* Maturity Info */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[120px]">
+          <div className="flex flex-col font-inter justify-center relative shrink-0 text-[#444444] font-regular text-nowrap">
+            <p className="leading-[1.25] whitespace-pre">
+              <span className="text-[15px] font-medium display-block">{deposit.daysUntilMaturity} days</span><br/>
+              <span className="display-block text-[13px] font-regular text-[#888888]">until maturity</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* Anticipated Yield */}
+        <div className="flex gap-2.5 items-center justify-start relative shrink-0 w-[200px]">
+          <div className="bg-blue-100/20 border border-blue-700/20 px-3 py-1.5 rounded-full">
+            <div className="flex flex-col font-geist-mono justify-center leading-[0] relative shrink-0 text-blue-700 font-regular text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">{deposit.anticipatedYield.toLocaleString()} {deposit.coinSymbol} yield</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Withdraw Button */}
+        {/* <div className="flex gap-2.5 items-center justify-end relative shrink-0 w-[100px]">
+          <div 
+            className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full cursor-not-allowed"
+            onClick={handleWithdrawClick}
+          >
+            <div className="flex flex-col font-inter justify-center leading-[0] relative shrink-0 text-sm text-nowrap">
+              <p className="leading-[1.2] whitespace-pre">Withdraw</p>
+            </div>
+          </div>
+        </div> */}
+      </div>
+    </div>
+  );
+}
+
+function PreviousDepositsList() {
+  return (
+    <div className="flex flex-col items-start justify-start relative shrink-0 w-full">
+      <div className="relative shrink-0 w-full">
+        <div className="bg-clip-padding border-0 border-transparent border-solid box-border flex flex-col gap-0 items-start justify-start relative w-full">
+          {DUMMY_PREVIOUS_DEPOSITS.map((deposit, index) => (
+            <PreviousDepositRow 
+              key={deposit.id} 
+              deposit={deposit} 
+              isLast={index === DUMMY_PREVIOUS_DEPOSITS.length - 1}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PreviousDepositsContainer() {
+  return (
+    <div
+      className="bg-transparent relative rounded-[32px] w-full max-w-[680px] border border-[#dadada]"
+      data-name="previous deposits container"
+    >
+      <div className="flex flex-col gap-0 w-full">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex flex-col gap-2.5 items-start justify-center relative shrink-0">
+         
+            <div className="flex flex-col font-inter justify-center leading-[0] font-semibold relative shrink-0 text-[#444444] text-xl md:text-2xl text-nowrap tracking-[0]">
+              <p className="leading-[1.2] whitespace-pre">
+                <span className="inline">Previous </span>
+                <span className="inline">Deposits</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Previous Deposits List */}
+        <div className="px-2 sm:px-6">
+          <PreviousDepositsList />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ReviewButtonProps {
   isEnabled: boolean;
   onClick: () => void;
@@ -559,12 +1066,12 @@ function ReviewButton({
     : "bg-[rgba(0,0,0,0.5)] opacity-20 rounded-[16px] cursor-not-allowed border border-[rgba(0,0,0,0.3)] shadow-[0px_4px_12px_-5px_rgba(0,0,0,0.1)] w-full";
 
   return (
-    <div className="py-6 w-full">
+    <div className="py-4 w-full">
       <div
         className={buttonClasses}
         onClick={isEnabled ? onClick : undefined}
       >
-        <div className="flex items-center justify-center py-3 md:py-6 w-full">
+        <div className="flex items-center justify-center py-3 md:py-3 w-full">
           <div className="font-inter font-medium text-[20px] md:text-[24px] text-white">
             Review
           </div>
@@ -593,59 +1100,61 @@ export function DepositSection() {
         amount: numericAmount,
         coin: selectedCoin.symbol,
         commitment: selectedOption,
-        expectedKyd: Math.floor(
-          (numericAmount / CONFIG.KYD_CONVERSION_RATE) *
-            selectedOption.multiplier,
-        ),
-        totalYield: Math.floor(
-          numericAmount *
-            (Math.pow(1 + CONFIG.APR, selectedOption.years) -
-              1),
-        ),
+        expectedKyd: Math.floor((numericAmount / CONFIG.KYD_CONVERSION_RATE) * selectedOption.multiplier),
+        totalYield: Math.floor(numericAmount * CONFIG.APR * selectedOption.years),
       });
       // Handle review logic here
     }
   };
 
   return (
-    <div
-      className="bg-transparent relative rounded-[32px] w-full max-w-[680px] border border-[#dadada]"
-      data-name="deposit section"
-    >
-      <div className="flex flex-col gap-6 w-full">
-        <DepositHeader selectedCoin={selectedCoin} />
+    <div className="flex flex-col gap-6 w-full max-w-[680px]">
+      {/* Main Deposit Section */}
+      <div
+        className="bg-transparent relative rounded-[32px] w-full border border-[#dadada]"
+        data-name="deposit section"
+      >
+        <div className="flex flex-col gap-6 w-full">
+          <DepositHeader selectedCoin={selectedCoin} />
 
-        {/* Input and Options */}
-        <div className="px-6 pb-0">
-          <div className="flex flex-col gap-6 w-full">
-            <DepositInputAndCoinSelect
-              amount={depositAmount}
-              onAmountChange={setDepositAmount}
-              selectedCoin={selectedCoin}
-              onCoinChange={setSelectedCoin}
-            />
-
-            <div className="flex flex-col gap-3 w-full">
-              <h3 className="text-lg md:text-xl font-inter font-semibold text-[#333333] tracking-[0%]">
-                Commitment
-              </h3>
-              <CommitmentOptionsRow
-                selectedOption={selectedOption}
-                onOptionSelect={setSelectedOption}
-              />
-              <ExpectedYield
-                depositAmount={numericAmount}
-                selectedOption={selectedOption}
+          {/* Input and Options */}
+          <div className="px-6 pb-0">
+            <div className="flex flex-col gap-6 w-full">
+              <DepositInputAndCoinSelect
+                amount={depositAmount}
+                onAmountChange={setDepositAmount}
                 selectedCoin={selectedCoin}
+                onCoinChange={setSelectedCoin}
               />
-              <ReviewButton
-                isEnabled={isReviewEnabled}
-                onClick={handleReview}
-              />
+
+              <div className="flex flex-col gap-3 w-full">
+                <h3 className="text-lg md:text-xl font-inter font-semibold text-[#333333] tracking-[0%]">
+                  Commitment
+                </h3>
+                <CommitmentOptionsRow
+                  selectedOption={selectedOption}
+                  onOptionSelect={setSelectedOption}
+                />
+                <ExpectedYield
+                  depositAmount={numericAmount}
+                  selectedOption={selectedOption}
+                  selectedCoin={selectedCoin}
+                />
+                <ReviewButton
+                  isEnabled={isReviewEnabled}
+                  onClick={handleReview}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Artist Rewards Section */}
+      <DepositRewardsContainer />
+
+      {/* OUT STUFF - Previous Deposits Section */}
+      <PreviousDepositsContainer />
     </div>
   );
 }

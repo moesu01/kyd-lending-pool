@@ -96,9 +96,9 @@ function StakeButton({ onClick }: StakeButtonProps) {
 }
 
 export function StakingSection() {
-  const [stakingBalance] = useState("1,214,397.42");
-  const [lifetimeEarned] = useState("528,746");
-  const [availableToWithdraw] = useState("237,184");
+  const [stakingBalance] = useState("303,599.35");
+  const [lifetimeEarned] = useState("131,186");
+  const [availableToWithdraw] = useState("59,296");
 
   const handleStakeClick = () => {
     console.log("Stake KYD clicked");
@@ -158,7 +158,7 @@ export function KYDRewardsContainer() {
 
   return (
     <div
-      className="bg-transparent relative rounded-[32px] w-full max-w-[680px] border border-[#dadada]"
+      className="bg-transparent relative rounded-[32px] w-full max-w-[680px] mb-16 border border-[#dadada]"
       data-name="kyd rewards container"
     >
       <div className="flex flex-col gap-0 w-full">
