@@ -7,15 +7,7 @@ import {
   imgKydToken,
 } from "../imports/svg-p8nzy";
 
-// Import artist images
-import taylorSwiftImg from "/kyd-lending-pool/assets/taylor swift.png";
-import drakeImg from "/kyd-lending-pool/assets/drake.png";
-import billieImg from "/kyd-lending-pool/assets/billie.png";
-import weekndImg from "/kyd-lending-pool/assets/weeknd.png";
-import arianaGrandeImg from "/kyd-lending-pool/assets/ariana grande.png";
-import postMaloneImg from "/kyd-lending-pool/assets/post malone.png";
-import oliviaRodrigoImg from "/kyd-lending-pool/assets/olivia rodrigo.png";
-import badBunnyImg from "/kyd-lending-pool/assets/bad bunny.png";
+// Artist images are referenced directly from public folder
 
 interface CommitmentOption {
   years: number;
@@ -647,16 +639,17 @@ function ArtistRewardRow({ reward, isLast = false }: ArtistRewardRowProps) {
   };
 
   // Helper function to get the correct image filename for each artist
+  
   const getArtistImageSrc = (artistName: string) => {
     const imageMap: { [key: string]: string } = {
-      'Taylor Swift': taylorSwiftImg,
-      'Drake': drakeImg,
-      'Billie Eilish': billieImg,
-      'The Weeknd': weekndImg,
-      'Ariana Grande': arianaGrandeImg,
-      'Post Malone': postMaloneImg,
-      'Olivia Rodrigo': oliviaRodrigoImg,
-      'Bad Bunny': badBunnyImg
+      'Taylor Swift': '/kyd-lending-pool/assets/taylor swift.png',
+      'Drake': '/kyd-lending-pool/assets/drake.png',
+      'Billie Eilish': '/kyd-lending-pool/assets/billie.png',
+      'The Weeknd': '/kyd-lending-pool/assets/weeknd.png',
+      'Ariana Grande': '/kyd-lending-pool/assets/ariana grande.png',
+      'Post Malone': '/kyd-lending-pool/assets/post malone.png',
+      'Olivia Rodrigo': '/kyd-lending-pool/assets/olivia rodrigo.png',
+      'Bad Bunny': '/kyd-lending-pool/assets/bad bunny.png'
     };
     
     const imageSrc = imageMap[artistName] || '/kyd-lending-pool/assets/placeholder.png';
